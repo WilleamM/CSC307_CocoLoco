@@ -3,9 +3,12 @@ import userModel from "./user.js";
 
 mongoose.set("debug", true);
 
+// uses the URI from the .env file
 mongoose
-  .connect("mongodb://localhost:27017/users")
-  .catch((error) => console.log(error));
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("Connected to MongoDB Atlas!"))
+  .catch((error) => console.log("Error connection to MongoDB Atlas: ",error));
+
 
 function getUsers(name, job) {
   let promise;
