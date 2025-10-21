@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 import userModel from "./user.js";
 
+import dotenv from 'dotenv';
+dotenv.config(); // allows program to read .env file
+
+
 mongoose.set("debug", true);
 
 // uses the URI from the .env file
