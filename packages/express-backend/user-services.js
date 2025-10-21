@@ -9,7 +9,7 @@ mongoose.set("debug", true);
 
 // uses the URI from the .env file
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, { dbName: 'csc307' })
   .then(() => console.log("Connected to MongoDB Atlas!"))
   .catch((error) => console.log("Error connection to MongoDB Atlas: ",error));
 
