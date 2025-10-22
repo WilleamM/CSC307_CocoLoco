@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon backend.js",
-    "start": "node backend.js"
+  "dev": "concurrently -k -n server,client -c auto \"npm:server\" \"npm:client\"",
+
+  "server": "cd packages/express-backend && npx nodemon backend.js",
+  "client": "cd packages/react-frontend && npm run dev",
+
+  "start": "cd packages/express-backend && node backend.js",
+  "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
