@@ -4,13 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "concurrently -k -n server,client -c auto \"npm:server\" \"npm:client\"",
-
-  "server": "cd packages/express-backend && npx nodemon backend.js",
-  "client": "cd packages/react-frontend && npm run dev",
-
-  "start": "cd packages/express-backend && node backend.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently -k -n server,client -c auto \"npm:server\" \"npm:client\"",
+    "server": "cd packages/express-backend && npx nodemon backend.js",
+    "client": "cd packages/react-frontend && npm run dev",
+    "start": "cd packages/express-backend && node backend.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -29,6 +27,8 @@
     "nodemon": "^3.1.10"
   },
   "dependencies": {
-    "mongoose": "^8.19.1"
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.5",
+    "mongoose": "^8.19.2"
   }
 }
