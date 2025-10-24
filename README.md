@@ -23,7 +23,7 @@ npm run dev
 
 # Contributing:
 
-## 🧠 Code Style (Linting & Formatting)
+## Code Style (Linting & Formatting)
 
 We use **ESLint** and **Prettier** to keep our code clean and consistent.
 
