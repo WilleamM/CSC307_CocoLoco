@@ -1,18 +1,16 @@
-import mongoose from "mongoose";
-import userModel from "./user.js";
+import mongoose from 'mongoose';
+import userModel from './user.js';
 
 import dotenv from 'dotenv';
 dotenv.config(); // allows program to read .env file
 
-
-mongoose.set("debug", true);
+mongoose.set('debug', true);
 
 // uses the URI from the .env file
 mongoose
   .connect(process.env.MONGO_URI, { dbName: 'csc307' })
-  .then(() => console.log("Connected to MongoDB Atlas!"))
-  .catch((error) => console.log("Error connection to MongoDB Atlas: ",error));
-
+  .then(() => console.log('Connected to MongoDB Atlas!'))
+  .catch((error) => console.log('Error connection to MongoDB Atlas: ', error));
 
 function getUsers(name, job) {
   let promise;
@@ -22,7 +20,8 @@ function getUsers(name, job) {
     promise = findUserByName(name);
   } else if (job && !name) {
     promise = findUserByJob(job);
-  } else if (name && job){ // first addition
+  } else if (name && job) {
+    // first addition
     promise = userModel.find({ name, job });
   }
   return promise;
@@ -46,7 +45,7 @@ function findUserByJob(job) {
   return userModel.find({ job: job });
 }
 
-function deleteUserById(id){
+function deleteUserById(id) {
   return userModel.findByIdAndDelete(id);
 }
 

@@ -1,14 +1,16 @@
 # CSC307_CocoLoco
 
 # Dependencies:
+
 @root
 npm install concurrently
-npm install -w express-backend express 
+npm install -w express-backend express
 npm install --save-dev nodemon
 npm install cors
-npm install mongoose 
+npm install mongoose
 
 # How To:
+
 npx nodemon backend.js
 npm run start
 

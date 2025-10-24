@@ -8,7 +8,8 @@
     "server": "cd packages/express-backend && npx nodemon backend.js",
     "client": "cd packages/react-frontend && npm run dev",
     "start": "cd packages/express-backend && node backend.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "repository": {
     "type": "git",
@@ -24,7 +25,11 @@
     "packages/*"
   ],
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
   },
   "dependencies": {
     "concurrently": "^9.2.1",
