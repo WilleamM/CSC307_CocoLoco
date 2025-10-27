@@ -12,6 +12,35 @@ mongoose
   .then(() => console.log('Connected to MongoDB Atlas!'))
   .catch((error) => console.log('Error connection to MongoDB Atlas: ', error));
 
+function getPosts(author = undefined, date = undefined, search_terms = []) {
+  // Function Notes: Author and Date are bundled here to prevent code reusage during search of author, date, and terms.
+
+  let promise;
+
+  // $regex : Query operator for a single term
+  // 'i' : Makes the query non-case-sensitive
+  const searchTermConditions = search_terms.map((term) => ({
+    description: { $regex: term, $options: 'i' },
+  }));
+
+  // $and : Query operator for many conditions (inclusive, aka. all must be fulfilled)
+  // $or : Not used ; Query operator for many conditions (non-inclusive)
+  let queryConditions = { $and: searchTermConditions };
+
+  // Adds author to the query conditions
+  if (author != undefined) {
+    queryConditions.author = author;
+  }
+
+  // Adds date to the query conditions
+  if (date != undefined) {
+    queryConditions.date = date;
+  }
+
+  promise = postModel.find(queryConditions);
+  return promise;
+}
+
 function getUsers(name, job) {
   let promise;
   if (name === undefined && job === undefined) {
@@ -41,10 +70,6 @@ function findUserByName(name) {
   return userModel.find({ name: name });
 }
 
-function findUserByJob(job) {
-  return userModel.find({ job: job });
-}
-
 function deleteUserById(id) {
   return userModel.findByIdAndDelete(id);
 }
@@ -52,6 +77,7 @@ function deleteUserById(id) {
 export default {
   addUser,
   getUsers,
+  getPosts,
   findUserById,
   findUserByName,
   findUserByJob,

@@ -18,20 +18,22 @@ app.get('/', (req, res) => {
   return res.send('Hello World!');
 });
 
-// GET /users?name=...&job=...
-// (Covers: all users, by name only, by job only, by name+job)
-app.get('/users', (req, res) => {
-  const name = req.query.name;
-  const job = req.query.job;
+// GET /posts?author=...&date=...&terms=...
+// (Covers: all posts, by author only, by date only, by terms only, and every combination between them)
+app.get('/posts', (req, res) => {
+  const author = req.query.author;
+  const date = req.query.date;
+  const search_terms = req.query.terms; // Assumes search_terms to be an array of strings (still unsure how that'll work in the URL)
   userServices
-    .getUsers(name, job)
-    .then((users) => res.send({ users_list: users }))
+    .getPosts(author, date, search_terms)
+    .then((posts) => res.send({ posts_list: posts }))
     .catch((err) => {
       console.error(err);
       res.status(500).send('Failed to fetch the users');
     });
 });
 // GET /users/:id
+// At least for now: Shows the profile of a single user
 app.get('/users/:id', (req, res) => {
   const id = req.params.id;
   userServices
