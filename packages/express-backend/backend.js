@@ -22,14 +22,14 @@ app.get('/', (req, res) => {
 // ------------------POSTS------------------
 
 // GET /posts?author=...&date=...
-// Example: GET http://localhost:8000/posts?author=willeam&date=2025-10-27
-// Returns all posts by "willeam" from Oct 27, 2025 (or all posts if no filters)
+// Example: GET http://localhost:8000/posts?author=willeam&date=2025-10-27&terms=dog&terms=fox
+// Returns all posts by "willeam" from Oct 27, 2025 that include the words "dog" and "fox" in the post body (or all posts if no filters)
 app.get('/posts', (req, res) => {
   const author = req.query.author;
   const date = req.query.date;
-
+  const search_terms = req.query.terms;
   postServices
-    .getPostsNoSearchTerms(author, date)
+    .getPosts(author, date, search_terms)
     .then((posts) => res.send({ posts_list: posts }))
     .catch((err) => {
       console.error(err);
@@ -38,6 +38,7 @@ app.get('/posts', (req, res) => {
 });
 
 // ------------------USERS------------------
+
 // GET /users/
 // Example: GET http://localhost:8000/users/
 // Returns all users
