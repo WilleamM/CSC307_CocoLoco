@@ -11,7 +11,8 @@ const PostSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    author: { // author username
+    author: {
+      // author username
       type: String,
       required: true,
       trim: true,
@@ -22,7 +23,7 @@ const PostSchema = new mongoose.Schema(
     // Post Content
     title: { type: String, trim: true, maxlength: 140 },
     body: { type: String, required: true, trim: true, maxlength: 5000 },
-    media: { type: [MediaSchema], default: [] },
+    //media: { type: [MediaSchema], default: [] },
 
     // visibility
     visibility: {
@@ -33,7 +34,9 @@ const PostSchema = new mongoose.Schema(
     },
 
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    comments: { type: [CommentSchema], default: [] },
+    comments: [
+      { type: mongoose.Schema.Types.ObjectId, ref: 'Comment', default: [] },
+    ],
 
     publishedAt: { type: Date, default: Date.now, index: true },
   },

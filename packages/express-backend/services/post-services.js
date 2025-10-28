@@ -1,5 +1,16 @@
-import mongoose from './db-connection.js';
-import Post from '../models/post.js';
+import './db-connection.js';
+import Post from '../schema/post.js';
+
+function getPostsNoSearchTerms(author = undefined, date = undefined) {
+  const query = {};
+  if (author) {
+    query.author = String(author).toLowerCase();
+  }
+  if (date) {
+    query.publishedAt = new Date(date);
+  }
+  return Post.find(query).lean();
+}
 
 function getPosts(author = undefined, date = undefined, search_terms = []) {
   // Function Notes: Author and Date are bundled here to prevent code reusage during search of author, date, and terms.
@@ -31,6 +42,6 @@ function getPosts(author = undefined, date = undefined, search_terms = []) {
 }
 
 export default {
-    getPosts,
+  getPosts,
+  getPostsNoSearchTerms,
 };
-

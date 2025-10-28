@@ -28,8 +28,8 @@ app.get('/posts', (req, res) => {
   const author = req.query.author;
   const date = req.query.date;
 
-  userServices
-    .getPosts(author, date)
+  postServices
+    .getPostsNoSearchTerms(author, date)
     .then((posts) => res.send({ posts_list: posts }))
     .catch((err) => {
       console.error(err);
@@ -43,8 +43,8 @@ app.get('/posts', (req, res) => {
 // Returns all users
 app.get('/users/', (req, res) => {
   userServices
-    .getUsers()
-    .then((user) => {
+    .getAllUsers()
+    .then((users) => {
       if (!users) {
         return res.send('No users in DB yet!');
       }
@@ -61,7 +61,7 @@ app.get('/users/', (req, res) => {
 // Returns a single user's profile by their id
 app.get('/users/:id', (req, res) => {
   const id = req.params.id;
-  postServices
+  userServices
     .findUserById(id)
     .then((user) => {
       if (!user) {
@@ -93,7 +93,7 @@ app.post('/users', (req, res) => {
   }
   userServices
     .addUser({ userName, displayName, bio, avatarUrl })
-    .then((created) => res.status(201), send(created))
+    .then((created) => res.status(201).send(created))
     .catch((err) => {
       console.error(err);
       res.status(400).send(err.message ?? 'Failed to create user');
