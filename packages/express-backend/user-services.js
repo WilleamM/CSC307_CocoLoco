@@ -1,17 +1,19 @@
 import mongoose from 'mongoose';
+
 import User from './schema/user.js';
+import Post from './schema/post.js';
+import Comment from './schema/comment.js';
 
 
 import dotenv from 'dotenv';
 dotenv.config(); // allows program to read .env file
-
 mongoose.set('debug', true);
 
-// uses the URI from the .env file
 mongoose
   .connect(process.env.MONGO_URI, { dbName: 'csc307_LocoBookDB' })
   .then(() => console.log('Connected to MongoDB Atlas!'))
   .catch((error) => console.log('Error connection to MongoDB Atlas: ', error));
+
 
 function getPosts(author = undefined, date = undefined, search_terms = []) {
   // Function Notes: Author and Date are bundled here to prevent code reusage during search of author, date, and terms.
