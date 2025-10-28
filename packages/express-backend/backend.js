@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import userServices from './services/user-services.js';
+import postServices from './services/post-services.js';
 
 // npx nodemon backend.js
 const app = express();
@@ -43,7 +44,7 @@ app.get('/posts', (req, res) => {
 // Returns a single user's profile by their id
 app.get('/users/:id', (req, res) => {
   const id = req.params.id;
-  userServices
+  postServices
     .findUserById(id)
     .then((user) => {
       if (!user) {
@@ -56,6 +57,33 @@ app.get('/users/:id', (req, res) => {
       res.status(400).send('invalid id');
     });
 });
+
+// POST /users
+/*
+Example: POST http://localhost:8000/users
+  body: {
+    "userName": "willeam",
+    "displayName": "Willeam Mendez",
+    "bio": "I go to school at Cal Poly SLO",
+    "avatarUrl": "https://example.com/avatar.jpg"
+    }
+*/
+// Creates a new user in the database
+app.post('/users', (req, res) => {
+  const { userName, displayName, bio = '', avatarUrl = ''} = req.body;
+  if (!userName || !displayName){
+    return res.status(400).send("username and display name required!");
+  }
+  userServices
+    .addUser({ userName, displayName, bio, avatarUrl})
+    .then((created) => res.status(201),send(created))
+    .catch((err) => {
+      console.error(err);
+      res.status(400).send(err.message ?? 'Failed to create user');
+    });
+});
+
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
