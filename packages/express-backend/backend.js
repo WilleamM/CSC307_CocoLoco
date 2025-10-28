@@ -38,6 +38,23 @@ app.get('/posts', (req, res) => {
 });
 
 // ------------------USERS------------------
+// GET /users/
+// Example: GET http://localhost:8000/users/
+// Returns all users
+app.get('/users/', (req, res) => {
+  userServices
+    .getUsers()
+    .then((user) => {
+      if (!users) {
+        return res.send('No users in DB yet!');
+      }
+      res.send({ users_list: users });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Failed to fetch users');
+    });
+});
 
 // GET /users/:id
 // Example: GET http://localhost:8000/users/671eb54c8ddad1d8cf7a0012
@@ -70,13 +87,13 @@ Example: POST http://localhost:8000/users
 */
 // Creates a new user in the database
 app.post('/users', (req, res) => {
-  const { userName, displayName, bio = '', avatarUrl = ''} = req.body;
-  if (!userName || !displayName){
-    return res.status(400).send("username and display name required!");
+  const { userName, displayName, bio = '', avatarUrl = '' } = req.body;
+  if (!userName || !displayName) {
+    return res.status(400).send('username and display name required!');
   }
   userServices
-    .addUser({ userName, displayName, bio, avatarUrl})
-    .then((created) => res.status(201),send(created))
+    .addUser({ userName, displayName, bio, avatarUrl })
+    .then((created) => res.status(201), send(created))
     .catch((err) => {
       console.error(err);
       res.status(400).send(err.message ?? 'Failed to create user');
@@ -89,20 +106,18 @@ app.post('/users', (req, res) => {
 app.delete('/users/:id', (req, res) => {
   const id = req.params.id;
   userServices
-  .deleteUserById(id)
-  .then((deleted) => {
-    if (!deleted){
-      return res.status(404).send("User not found");
-    }
-    res.status(204).send("User Created!");
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(400).send("Failed to delete user");
-  });
+    .deleteUserById(id)
+    .then((deleted) => {
+      if (!deleted) {
+        return res.status(404).send('User not found');
+      }
+      res.status(204).send('User Created!');
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(400).send('Failed to delete user');
+    });
 });
-
-
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
