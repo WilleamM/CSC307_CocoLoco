@@ -11,6 +11,7 @@ const PostSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    
     author: {
       // author username
       type: String,

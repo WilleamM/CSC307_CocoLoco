@@ -17,10 +17,14 @@ function getPosts(author = undefined, date = undefined, search_terms = []) {
 
   let promise;
 
+  if (typeof search_terms === 'string') {
+    search_terms = [search_terms];
+  }
+
   // $regex : Query operator for a single term
   // 'i' : Makes the query non-case-sensitive
   const searchTermConditions = search_terms.map((term) => ({
-    description: { $regex: term, $options: 'i' },
+    body: { $regex: term, $options: 'i' },
   }));
 
   // $and : Query operator for many conditions (inclusive, aka. all must be fulfilled)
@@ -31,13 +35,19 @@ function getPosts(author = undefined, date = undefined, search_terms = []) {
   if (author != undefined) {
     queryConditions.author = author;
   }
-
   // Adds date to the query conditions
   if (date != undefined) {
-    queryConditions.date = date;
+    queryConditions.publishedAt = date;
   }
 
-  promise = postModel.find(queryConditions);
+  console.log('Begin search_terms: ');
+  console.log(search_terms);
+
+  console.log('Begin queryConditions: ');
+  console.log(queryConditions);
+  console.log('End queryConditions.');
+
+  promise = Post.find(queryConditions);
   return promise;
 }
 
