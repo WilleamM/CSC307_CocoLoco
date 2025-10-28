@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import userServices from './user-services.js';
+// home of all endpoints
 
 // npx nodemon backend.js
 const app = express();
@@ -48,36 +49,7 @@ app.get('/users/:id', (req, res) => {
     });
 });
 
-// POST /users/
-app.post('/users', (req, res) => {
-  const { name, job } = req.body;
-  if (!name || !job) return res.status(400).send('name and job are required');
 
-  userServices
-    .addUser({ name, job })
-    .then((createdUser) => res.status(201).send(createdUser))
-    .catch((err) => {
-      console.error(err);
-      res.status(400).send(err.message ?? 'Failed to create user');
-    });
-});
-
-// DELETE /users/:id
-app.delete('/users/:id', (req, res) => {
-  const id = req.params.id;
-  userServices
-    .deleteUserById(id)
-    .then((deletedUser) => {
-      if (!deletedUser) {
-        return res.status(404).send('User not found');
-      }
-      return res.status(204).send('User deleted!');
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(400).send('Failed to delete user');
-    });
-});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import userModel from './user.js';
+import User from './schema/user.js';
+
 
 import dotenv from 'dotenv';
 dotenv.config(); // allows program to read .env file
@@ -8,13 +9,13 @@ mongoose.set('debug', true);
 
 // uses the URI from the .env file
 mongoose
-  .connect(process.env.MONGO_URI, { dbName: 'csc307' })
+  .connect(process.env.MONGO_URI, { dbName: 'csc307_LocoBookDB' })
   .then(() => console.log('Connected to MongoDB Atlas!'))
   .catch((error) => console.log('Error connection to MongoDB Atlas: ', error));
 
 function getPosts(author = undefined, date = undefined, search_terms = []) {
   // Function Notes: Author and Date are bundled here to prevent code reusage during search of author, date, and terms.
-
+  
   let promise;
 
   // $regex : Query operator for a single term
@@ -44,34 +45,34 @@ function getPosts(author = undefined, date = undefined, search_terms = []) {
 function getUsers(name, job) {
   let promise;
   if (name === undefined && job === undefined) {
-    promise = userModel.find();
+    promise = User.find();
   } else if (name && !job) {
     promise = findUserByName(name);
   } else if (job && !name) {
     promise = findUserByJob(job);
   } else if (name && job) {
     // first addition
-    promise = userModel.find({ name, job });
+    promise = User.find({ name, job });
   }
   return promise;
 }
 
 function findUserById(id) {
-  return userModel.findById(id);
+  return User.findById(id);
 }
 
 function addUser(user) {
-  const userToAdd = new userModel(user);
+  const userToAdd = new User(user);
   const promise = userToAdd.save();
   return promise;
 }
 
 function findUserByName(name) {
-  return userModel.find({ name: name });
+  return User.find({ name: name });
 }
 
 function deleteUserById(id) {
-  return userModel.findByIdAndDelete(id);
+  return User.findByIdAndDelete(id);
 }
 
 export default {
