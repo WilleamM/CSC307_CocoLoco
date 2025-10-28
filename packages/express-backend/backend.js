@@ -83,6 +83,25 @@ app.post('/users', (req, res) => {
     });
 });
 
+// DELETE /users/:id
+// Example: DELETE http://localhost:8000/users/671eb54c8ddad1d8cf7a0012
+// Deletes user by specific id
+app.delete('/users/:id', (req, res) => {
+  const id = req.params.id;
+  userServices
+  .deleteUserById(id)
+  .then((deleted) => {
+    if (!deleted){
+      return res.status(404).send("User not found");
+    }
+    res.status(204).send("User Created!");
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(400).send("Failed to delete user");
+  });
+});
+
 
 
 app.listen(port, () => {

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from './db-connection.js';
 import User from '../schema/user.js';
 
 
