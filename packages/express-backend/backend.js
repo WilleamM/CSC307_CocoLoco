@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import userServices from './user-services.js';
-
+import userServices from './services/user-services.js';
 
 // npx nodemon backend.js
 const app = express();
@@ -10,13 +9,14 @@ app.use(cors());
 app.use(express.json());
 
 // health check
-app.get('/', (req, res) => { return res.send('Hello World!')});
+app.get('/', (req, res) => {
+  return res.send('Hello World!');
+});
 
 // NOTE: For endpoint creation show:
 // - what call looks like
 // - an example call
 // - what it returns
-
 
 // ------------------POSTS------------------
 
@@ -36,7 +36,6 @@ app.get('/posts', (req, res) => {
     });
 });
 
-
 // ------------------USERS------------------
 
 // GET /users/:id
@@ -47,9 +46,9 @@ app.get('/users/:id', (req, res) => {
   userServices
     .findUserById(id)
     .then((user) => {
-      if (!user){
+      if (!user) {
         return res.status(404).send('User not found');
-      } 
+      }
       return res.send(user); // if user exists, return the user
     })
     .catch((err) => {
@@ -57,10 +56,6 @@ app.get('/users/:id', (req, res) => {
       res.status(400).send('invalid id');
     });
 });
-
-
-
-
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
