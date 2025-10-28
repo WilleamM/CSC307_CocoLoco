@@ -35,7 +35,6 @@ function getPosts(author = undefined, date = undefined, search_terms = []) {
   if (author != undefined) {
     queryConditions.author = author;
   }
-
   // Adds date to the query conditions
   if (date != undefined) {
     queryConditions.publishedAt = date;
