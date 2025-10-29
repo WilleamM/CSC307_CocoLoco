@@ -17,9 +17,14 @@ function deleteUserById(id) {
   return User.findByIdAndDelete(id);
 }
 
+function updateUser(id, updates){ //this will update the User data if needed 
+  return userModel.findByIdAndUpdate(id, updates, {new: true});
+}
+
 export default {
   addUser,
   getAllUsers,
   findUserById,
   deleteUserById,
+  updateUser,
 };
