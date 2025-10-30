@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import Table from './Table';
-import Form from './Form';
+import React, { useState, useEffect } from "react";
+import Table from "./Table";
+import Form from "./Form";
+import Login from "./Login";
+import SignUp from "./SignUp";
 
 // <Table characterData={characters}/> where characters is being passed to table as a prop
 function MyApp() {
@@ -66,11 +68,19 @@ function MyApp() {
       .catch((error) => console.log(error));
   }
 
-  return (
-    <div className="container">
-      <Table characterData={characters} removeCharacter={removeOneCharacter} />
-      <Form handleSubmit={updateList} />
-    </div>
+
+    return (
+  <div className="container">
+    <SignUp handleSubmit={(person) => console.log("Submitted:", person)} />
+  </div>
   );
+
+  return (
+  <div className="container">
+    <SignUp handleSubmit={(person) => console.log("Submitted:", person)} />
+  </div>
+  );
+  
 }
+
 export default MyApp;
