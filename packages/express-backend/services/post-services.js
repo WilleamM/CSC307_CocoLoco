@@ -40,13 +40,6 @@ function getPosts(author = undefined, date = undefined, search_terms = []) {
     queryConditions.publishedAt = date;
   }
 
-  console.log('Begin search_terms: ');
-  console.log(search_terms);
-
-  console.log('Begin queryConditions: ');
-  console.log(queryConditions);
-  console.log('End queryConditions.');
-
   promise = Post.find(queryConditions);
   return promise;
 }
