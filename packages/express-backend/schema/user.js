@@ -35,10 +35,26 @@ const UserSchema = new mongoose.Schema(
       minlength: 1,
       maxlength: 50,
     },
+    
+    // added a posts, followers, following for now
+    posts: { //might be an array in the future if they have more posts
+      type: Number,
+      default: 0
+    },
+
+    followers: {
+      type: Number,
+      default: 0,
+    },
+
+    following: {
+      type: Number,
+      default: 0,
+    },
 
     // Profile info
     bio: { type: String, default: '', max_length: 500 },
-    avatarUrl: { type: String, default: '' }, // TODO: add url handling
+    avatarUrl: { type: String, default: 'cry.png' }, // TODO: add url handling
 
     // Lists
     friendIds: [
