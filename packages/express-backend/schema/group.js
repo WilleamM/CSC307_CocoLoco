@@ -17,7 +17,7 @@ const GroupSchema = new mongoose.Schema(
     visibility: {
       type: String,
       enum: ['public', 'invite-only', 'private'],
-      default: 'private',
+      default: 'public',
       index: true,
     },
 

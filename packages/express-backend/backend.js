@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import userServices from './services/user-services.js';
 import postServices from './services/post-services.js';
+import groupServices from './services/group-services.js';
+import friendServices from './services/friend-services.js';
+import commentServices from './services/comment-services.js';
 
 // npx nodemon backend.js
 const app = express();
@@ -34,6 +37,56 @@ app.get('/posts', (req, res) => {
     .catch((err) => {
       console.error(err);
       res.status(500).send('Failed to fetch posts');
+    });
+});
+
+// POST /posts
+// Creates a post
+app.post('/posts', (req, res) => {
+  const {
+    authorId,
+    author,
+    title = '',
+    body,
+    visibility = 'friends',
+  } = req.body;
+
+  if (!authorId || !author || !body) {
+    return res.status(400).send('authorId, author, and body are required');
+  }
+
+  postServices
+    .createPost({ authorId, author, title, body, visibility })
+    .then((post) => res.status(201).send(post))
+    .catch((err) => {
+      console.error(err);
+      res.status(400).send(err.message);
+    });
+});
+
+// POST /posts/:id/comments
+// Creates a comment and attaches it to post
+app.post('/posts/:id/comments', (req, res) => {
+  const postId = req.params.id;
+  const { authorId, authorHandle, content } = req.body;
+
+  if (!authorId || !authorHandle || !content) {
+    return res.status(400).send('authorId, authorHandle, and content required');
+  }
+
+  commentServices
+    .createComment({ postId, authorId, authorHandle, content })
+    .then((comment) => {
+      return commentServices
+        .addCommentToPost(postId, comment._id)
+        .then(() => comment);
+    })
+    .then((comment) => {
+      res.status(201).send(comment);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(400).send(err.message);
     });
 });
 
@@ -119,6 +172,9 @@ app.delete('/users/:id', (req, res) => {
       res.status(400).send('Failed to delete user');
     });
 });
+
+// ------------------GROUPS------------------
+// TODO: Created the group-services functions, just need to add api endpoints to use them
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

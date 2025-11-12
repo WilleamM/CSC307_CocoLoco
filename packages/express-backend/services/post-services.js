@@ -14,7 +14,6 @@ function getPostsNoSearchTerms(author = undefined, date = undefined) {
 
 function getPosts(author = undefined, date = undefined, search_terms = []) {
   // Function Notes: Author and Date are bundled here to prevent code reusage during search of author, date, and terms.
-
   let promise;
 
   if (typeof search_terms === 'string') {
@@ -44,7 +43,15 @@ function getPosts(author = undefined, date = undefined, search_terms = []) {
   return promise;
 }
 
+function createPost({ authorId, author, title = '', body, visibility = 'friends' }) {
+  return Post.create({ authorId, author, title, body, visibility });
+}
+
+
+
+
 export default {
   getPosts,
   getPostsNoSearchTerms,
+  createPost,
 };
