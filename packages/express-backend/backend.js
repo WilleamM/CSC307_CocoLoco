@@ -88,6 +88,7 @@ Example: POST http://localhost:8000/users
 */
 // Creates a new user in the database
 app.post('/users', (req, res) => {
+  console.log('BODY RECEIVED:', req.body);
   const { userName, displayName, bio = '', avatarUrl = '' } = req.body;
   if (!userName || !displayName) {
     return res.status(400).send('username and display name required!');
