@@ -3,13 +3,18 @@ import Post from '../schema/post.js';
 
 function getPostsNoSearchTerms(author = undefined, date = undefined) {
   const query = {};
+
   if (author) {
+    // your schema stores `author` as a string username; normalize to lowercase for consistency
     query.author = String(author).toLowerCase();
   }
+
   if (date) {
-    query.publishedAt = new Date(date);
+    const range = dayRange(date);
+    if (range) query.publishedAt = range;
   }
-  return Post.find(query).lean();
+
+  return Post.find(query).sort({ publishedAt: -1 }).lean();
 }
 
 function getPosts(author = undefined, date = undefined, search_terms = []) {
@@ -43,15 +48,32 @@ function getPosts(author = undefined, date = undefined, search_terms = []) {
   return promise;
 }
 
-function createPost({ authorId, author, title = '', body, visibility = 'friends' }) {
+function createPost({
+  authorId,
+  author,
+  title = '',
+  body,
+  visibility = 'friends',
+}) {
   return Post.create({ authorId, author, title, body, visibility });
 }
 
+function deletePostById(postId) {
+  return Post.findByIdAndDelete(postId);
+}
 
-
+function pullCommentFromPost(postId, commentId) {
+  return Post.findByIdAndUpdate(
+    postId,
+    { $pull: { comments: commentId } },
+    { new: true }
+  ).lean();
+}
 
 export default {
   getPosts,
   getPostsNoSearchTerms,
   createPost,
+  deletePostById,
+  pullCommentFromPost,
 };

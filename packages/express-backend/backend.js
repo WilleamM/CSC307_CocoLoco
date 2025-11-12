@@ -64,6 +64,45 @@ app.post('/posts', (req, res) => {
     });
 });
 
+// DELETE /posts/:id  -> delete a post and its comments
+app.delete('/posts/:id', (req, res) => {
+  const postId = req.params.id;
+
+  // delete post first, then cascade-delete its comments
+  postServices.deletePostById(postId)
+    .then((deletedPost) => {
+      if (!deletedPost) return res.status(404).send('Post not found');
+      // remove all comments that belonged to this post
+      return commentServices.deleteManyByPostId(postId);
+    })
+    .then(() => res.status(204).send())
+    .catch((err) => {
+      console.error(err);
+      res.status(400).send('Failed to delete post');
+    });
+});
+
+// ------------------COMMENTS------------------
+
+// GET /posts/:id/comments
+// Get all comments for a post
+app.get('/posts/:id/comments', (req, res) => {
+  const postId = req.params.id;
+
+  commentServices
+    .getCommentsByPostId(postId)
+    .then((comments) => {
+      if (!comments || comments.length === 0) {
+        return res.status(404).send('No comments found for this post');
+      }
+      res.send({ comments_list: comments });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(400).send('Failed to fetch comments');
+    });
+});
+
 // POST /posts/:id/comments
 // Creates a comment and attaches it to post
 app.post('/posts/:id/comments', (req, res) => {
@@ -87,6 +126,30 @@ app.post('/posts/:id/comments', (req, res) => {
     .catch((err) => {
       console.error(err);
       res.status(400).send(err.message);
+    });
+});
+
+// DELETE /comments/:id
+// Deletes a single comment and unlink it from its post
+app.delete('/comments/:id', (req, res) => {
+  const commentId = req.params.id;
+
+  // 1) find comment to learn its postId
+  commentServices
+    .getCommentById(commentId)
+    .then((comment) => {
+      if (!comment) return res.status(404).send('Comment not found');
+
+      // 2) delete comment and pull ref from the post
+      return Promise.all([
+        commentServices.deleteCommentById(commentId),
+        postServices.pullCommentFromPost(comment.postId, commentId),
+      ]);
+    })
+    .then(() => res.status(204).send())
+    .catch((err) => {
+      console.error(err);
+      res.status(400).send('Failed to delete comment');
     });
 });
 
