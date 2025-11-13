@@ -1,0 +1,96 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Main Header Styling */
+.front-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f5f5f5; 
+    border-bottom: 2px solid #ddd;
+}
+
+/* Left Section: Logo and Search Bar */
+.left-section {
+    display: flex;
+    align-items: center;
+}
+
+.main-logo img {
+    height: 40px;
+    margin-right: 20px;
+}
+
+.search-bar input {
+    padding: 8px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    width: 200px;
+}
+
+/* Middle Section: Icons */
+.middle-section {
+    display: flex;
+    gap: 15px;
+}
+
+.middle-section button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.friends-only-icon{
+  color: black;
+}
+
+.home-icon{
+  color: black;
+}
+
+.groups-icon{
+  color: black;
+}
+
+/* Right Section: Upload and Profile */
+.right-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.upload button {
+    display: flex;
+    align-items: center;
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+
+
+.upload .up-arrow {
+    margin-right: 5px;
+}
+
+.profile-icon {
+    position: relative;
+}
+
+.profile-icon img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}

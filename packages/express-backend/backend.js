@@ -3,7 +3,7 @@ import cors from 'cors';
 import userServices from './services/user-services.js';
 import postServices from './services/post-services.js';
 import groupServices from './services/group-services.js';
-import friendServices from './services/friend-services.js';
+ // import friendServices from './services/friend-services.js';
 import commentServices from './services/comment-services.js';
 
 // npx nodemon backend.js
