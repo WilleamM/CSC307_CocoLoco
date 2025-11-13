@@ -3,7 +3,7 @@ import cors from 'cors';
 import userServices from './services/user-services.js';
 import postServices from './services/post-services.js';
 import groupServices from './services/group-services.js';
-import friendServices from './services/friend-services.js';
+import friendServices from './services/friends-services.js';
 import commentServices from './services/comment-services.js';
 
 // npx nodemon backend.js
@@ -69,7 +69,8 @@ app.delete('/posts/:id', (req, res) => {
   const postId = req.params.id;
 
   // delete post first, then cascade-delete its comments
-  postServices.deletePostById(postId)
+  postServices
+    .deletePostById(postId)
     .then((deletedPost) => {
       if (!deletedPost) return res.status(404).send('Post not found');
       // remove all comments that belonged to this post
