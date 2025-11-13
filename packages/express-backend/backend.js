@@ -5,6 +5,7 @@ import postServices from './services/post-services.js';
 import groupServices from './services/group-services.js';
 import friendServices from './services/friends-services.js';
 import commentServices from './services/comment-services.js';
+//import authServices from './services/auth.js';
 
 // npx nodemon backend.js
 const app = express();
@@ -42,7 +43,7 @@ app.get('/posts', (req, res) => {
 
 // POST /posts
 // Creates a post
-app.post('/posts', (req, res) => {
+app.post('/posts', authenticateUser, (req, res) => {
   const {
     authorId,
     author,
@@ -65,7 +66,7 @@ app.post('/posts', (req, res) => {
 });
 
 // DELETE /posts/:id  -> delete a post and its comments
-app.delete('/posts/:id', (req, res) => {
+app.delete('/posts/:id', authenticateUser, (req, res) => {
   const postId = req.params.id;
 
   // delete post first, then cascade-delete its comments
@@ -106,7 +107,7 @@ app.get('/posts/:id/comments', (req, res) => {
 
 // POST /posts/:id/comments
 // Creates a comment and attaches it to post
-app.post('/posts/:id/comments', (req, res) => {
+app.post('/posts/:id/comments', authenticateUser, (req, res) => {
   const postId = req.params.id;
   const { authorId, authorHandle, content } = req.body;
 
@@ -132,7 +133,7 @@ app.post('/posts/:id/comments', (req, res) => {
 
 // DELETE /comments/:id
 // Deletes a single comment and unlink it from its post
-app.delete('/comments/:id', (req, res) => {
+app.delete('/comments/:id', authenticateUser, (req, res) => {
   const commentId = req.params.id;
 
   // 1) find comment to learn its postId
@@ -177,7 +178,7 @@ app.get('/users/', (req, res) => {
 // GET /users/:id
 // Example: GET http://localhost:8000/users/671eb54c8ddad1d8cf7a0012
 // Returns a single user's profile by their id
-app.get('/users/:id', (req, res) => {
+app.get('/users/:id', authenticateUser, (req, res) => {
   const id = req.params.id;
   userServices
     .findUserById(id)
@@ -222,7 +223,7 @@ app.post('/users', (req, res) => {
 // DELETE /users/:id
 // Example: DELETE http://localhost:8000/users/671eb54c8ddad1d8cf7a0012
 // Deletes user by specific id
-app.delete('/users/:id', (req, res) => {
+app.delete('/users/:id', authenticateUser, (req, res) => {
   const id = req.params.id;
   userServices
     .deleteUserById(id)
@@ -237,6 +238,9 @@ app.delete('/users/:id', (req, res) => {
       res.status(400).send('Failed to delete user');
     });
 });
+
+// ------------------LOGIN------------------
+app.post('/login', registerUser);
 
 // ------------------GROUPS------------------
 // TODO: Created the group-services functions, just need to add api endpoints to use them
