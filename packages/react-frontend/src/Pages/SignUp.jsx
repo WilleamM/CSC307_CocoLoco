@@ -4,24 +4,37 @@ import axios from 'axios'; // fetches data from an API
 import './SignUp.css';
 
 function SignUp(props) {
-  const [form, setForm] = useState({ userName: '', displayName: '', bio: '', avatarUrl: ''});
+  const [creds, setCreds] = useState({ userName: "", displayName: "", password: ""});
   const [msg, setMsg] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    switch(name){
+      case "userName":
+        setCreds({ ...creds, userName: value });
+        break;
+      case "displayName":
+        setCreds({ ...creds, displayName: value });
+        break;
+      case "password":
+        setCreds({ ...creds, password: value });
+        break;
+    }
   };
 
   // checks when you input text into text boxes
   // then setPerson updates person
+
+  function submitForm() {
+    props.handleSubmit(creds);
+    setCreds({ userName: '', displayName: '', password: ''});
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { userName, displayName, bio, avatarUrl } = form;
-      const response = await axios.post('http://localhost:8000/users', { userName, displayName, bio, avatarUrl });
+      const { userName, displayName, password } = creds;
+      const response = await axios.post('http://localhost:8000/users', { userName, displayName, password });
       console.log('User registered:', response.data);
       setMsg("User successfully Created!")
       // Handle successful registration (e.g., redirect, show success message)
@@ -30,18 +43,42 @@ function SignUp(props) {
       setMsg(error.response?.data || 'Error Creating User');
       console.log('Status:', error.response?.status, 'Body:', error.response?.data);
     }
-  };
+    };
 
     return (
     <div className="signup">
       <div className="signup-card">   {/* ← the rectangle */}
         <h1>Sign Up</h1>
-        <form className="signup-form" onSubmit={handleSubmit}>
-          <input name="userName" placeholder="Username" value={form.userName} onChange={handleChange} />
-          <input name="displayName" placeholder="Display Name" value={form.displayName} onChange={handleChange} />
-          <input name="bio" placeholder="Bio" value={form.bio} onChange={handleChange} />
-          <input name="avatarUrl" placeholder="Avatar Url" value={form.avatarUrl} onChange={handleChange} />
-          <button type="submit"> Sign up</button>
+        <form className="signup-form">
+          <input 
+            type="text" 
+            name="userName" 
+            id="userName" 
+            placeholder="Username" 
+            value={creds.userName} 
+            onChange={handleChange} 
+          />
+          <input 
+            type="text" 
+            name="displayName" 
+            id="displayName"
+            placeholder="Display Name" 
+            value={creds.displayName} 
+            onChange={handleChange} 
+            />
+          <input 
+            type="password"
+            name="password" 
+            id="password"
+            placeholder="Password" 
+            value={creds.password} 
+            onChange={handleChange} 
+          />
+          <input
+            type="button"
+            value={props.buttonLabel || 'Sign Up'}
+            onClick={handleSubmit}
+          />
         </form>
         {msg && <p>{msg}</p>}
         <p>

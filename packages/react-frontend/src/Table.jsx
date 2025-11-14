@@ -14,6 +14,9 @@ function TableHeader() {
 }
 
 function TableBody(props) {
+  if (props.characterData === null) {
+    return <caption>Data Unavailable</caption>;
+  }
   const rows = props.characterData.map((row, index) => {
     // doing the return statement for every element in characterData
     return (

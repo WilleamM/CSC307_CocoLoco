@@ -5,8 +5,8 @@ import './Login.css';
 
 function Login(props) {
   const [creds, setCreds] = useState({
-    username: '',
-    pwd: '',
+    userName: '',
+    password: '',
   });
 
   return (
@@ -18,16 +18,23 @@ function Login(props) {
         <form className="login-form">
           <input
             type="text"
-            name="username"
-            id="username"
-            value={creds.username}
+            name="userName"
+            id="userName"
+            value={creds.userName}
             onChange={handleChange}
             placeholder="Username"
           />
-          <input type="password" placeholder="Password" />
+          <input 
+            type="password" 
+            name="password"
+            id="password"
+            value={creds.password}
+            onChange={handleChange}
+            placeholder="Password" 
+          />
           <input
             type="button"
-            value={props.buttonLabel || 'Sign In'}
+            value={props.buttonLabel || 'Login'}
             onClick={submitForm}
           />
         </form>
@@ -42,18 +49,18 @@ function Login(props) {
   function handleChange(event) {
     const { name, value } = event.target;
     switch (name) {
-      case 'username':
-        setCreds({ ...creds, username: value });
+      case 'userName':
+        setCreds({ ...creds, userName: value });
         break;
       case 'password':
-        setCreds({ ...creds, pwd: value });
+        setCreds({ ...creds, password: value });
         break;
     }
   }
 
   function submitForm() {
     props.handleSubmit(creds);
-    setCreds({ username: '', pwd: '' });
+    setCreds({ userName: '', password: '' });
   }
 }
 
