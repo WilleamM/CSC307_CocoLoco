@@ -13,7 +13,7 @@ const ProfilePage = () => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/users/${userId}`
+          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
         );
         setUserData(response.data);
       } catch (error) {
@@ -28,7 +28,7 @@ const ProfilePage = () => {
     const fetchUserPost = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/posts/${userId}`,
+          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${userId}`,
           { params: authorId }
         );
         setUserPost(response.data);

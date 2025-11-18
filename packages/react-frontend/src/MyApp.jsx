@@ -5,7 +5,8 @@ import Login from './Pages/Login.jsx';
 import SignUp from './Pages/SignUp.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
-const API_PREFIX = 'http://localhost:8000';
+const API_PREFIX =
+  'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net';
 
 //Home page
 function Home() {

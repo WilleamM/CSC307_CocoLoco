@@ -38,11 +38,14 @@ function SignUp(props) {
     e.preventDefault();
     try {
       const { userName, displayName, password } = creds;
-      const response = await axios.post('http://localhost:8000/users', {
-        userName,
-        displayName,
-        password,
-      });
+      const response = await axios.post(
+        'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users',
+        {
+          userName,
+          displayName,
+          password,
+        }
+      );
       console.log('User registered:', response.data);
       setMsg('User successfully Created!');
       // Handle successful registration (e.g., redirect, show success message)
