@@ -13,6 +13,7 @@ npm install --save-dev nodemon
 npm install cors
 npm install mongoose
 npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-prettier
+npm install -D @eslint/js eslint-plugin-react globals
 
 npm i --save @fortawesome/react-fontawesome@latest
 npm i --save @fortawesome/fontawesome-svg-core
