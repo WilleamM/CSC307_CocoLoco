@@ -1,0 +1,33 @@
+name: CI Testing
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies (npm ci)
+        run: npm ci
+
+      - name: Lint (eslint + prettier)
+        run: npm run lint
+
+      - name: Build frontend
+        run: npm run -w react-frontend build
+
+      - name: Run tests
+        run: npm test

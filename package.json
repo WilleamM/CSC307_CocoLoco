@@ -8,8 +8,12 @@
     "server": "cd packages/express-backend && npx nodemon backend.js",
     "client": "cd packages/react-frontend && npm run dev",
     "start": "cd packages/express-backend && node backend.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
+    
+    "lint": "npx eslint . && npx prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "test": "echo \"No tests yet\"",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+
+  
   },
   "repository": {
     "type": "git",
