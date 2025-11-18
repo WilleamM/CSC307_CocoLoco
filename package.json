@@ -9,7 +9,7 @@
     "client": "cd packages/react-frontend && npm run dev",
     "start": "cd packages/express-backend && node backend.js",
 
-    "lint": "npx eslint . && npx prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "lint": "npm run -w react-frontend lint && npx prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "test": "echo \"No tests yet\"",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
