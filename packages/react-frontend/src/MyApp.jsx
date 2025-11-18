@@ -5,7 +5,7 @@ import Login from './Pages/Login.jsx';
 import SignUp from './Pages/SignUp.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
-const API_PREFIX = 'http://localhost:8000'
+const API_PREFIX = 'http://localhost:8000';
 
 //Home page
 function Home() {
@@ -21,109 +21,102 @@ function Home() {
 
 // <Table characterData={characters}/> where characters is being passed to table as a prop
 function MyApp() {
-  const INVALID_TOKEN = "INVALID_TOKEN";
+  const INVALID_TOKEN = 'INVALID_TOKEN';
   const [token, setToken] = useState(INVALID_TOKEN);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [characters, setCharacters] = useState(null);
 
   function loginUser(creds) {
-  const promise = fetch(`${API_PREFIX}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(creds)
-  })
-    .then((response) => {
-      if (response.status === 200) {
-        response
-          .json()
-          .then((payload) => setToken(payload.token));
-        setMessage(`Login successful; auth token saved`);
-      } else {
-        setMessage(
-          `Login Error ${response.status}: ${response.data}`
-        );
-      }
+    const promise = fetch(`${API_PREFIX}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(creds),
     })
-    .catch((error) => {
-      setMessage(`Login Error: ${error}`);
-    });
+      .then((response) => {
+        if (response.status === 200) {
+          response.json().then((payload) => setToken(payload.token));
+          setMessage(`Login successful; auth token saved`);
+        } else {
+          setMessage(`Login Error ${response.status}: ${response.data}`);
+        }
+      })
+      .catch((error) => {
+        setMessage(`Login Error: ${error}`);
+      });
 
-  return promise;
-}
+    return promise;
+  }
 
   function signupUser(creds) {
-  const promise = fetch(`${API_PREFIX}/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(creds)
-  })
-    .then((response) => {
-      if (response.status === 201) {
-        response
-          .json()
-          .then((payload) => setToken(payload.token));
-        setMessage(
-          `Signup successful for user: ${creds.username}; auth token saved`
-        );
-      } else {
-        setMessage(
-          `Signup Error ${response.status}: ${response.data}`
-        );
-      }
+    const promise = fetch(`${API_PREFIX}/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(creds),
     })
-    .catch((error) => {
-      setMessage(`Signup Error: ${error}`);
-    });
+      .then((response) => {
+        if (response.status === 201) {
+          response.json().then((payload) => setToken(payload.token));
+          setMessage(
+            `Signup successful for user: ${creds.username}; auth token saved`
+          );
+        } else {
+          setMessage(`Signup Error ${response.status}: ${response.data}`);
+        }
+      })
+      .catch((error) => {
+        setMessage(`Signup Error: ${error}`);
+      });
 
-  return promise;
-}
+    return promise;
+  }
 
   useEffect(() => {
-  fetchUsers()
-    .then((res) =>
-      res.status === 200 ? res.json() : undefined
-    )
-    .then((json) => {
-      if (json) {
-        setCharacters(json["users_list"]);
-      } else {
-        setCharacters(null);
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-  }, [token])
+    fetchUsers()
+      .then((res) => (res.status === 200 ? res.json() : undefined))
+      .then((json) => {
+        if (json) {
+          setCharacters(json['users_list']);
+        } else {
+          setCharacters(null);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [token]);
 
   function fetchUsers() {
-  const promise = fetch(`${API_PREFIX}/users`, {
-    headers: addAuthHeader()
-  });
+    const promise = fetch(`${API_PREFIX}/users`, {
+      headers: addAuthHeader(),
+    });
 
-  return promise;
-}
-
-function addAuthHeader(otherHeaders = {}) {
-  if (token === INVALID_TOKEN) {
-    return otherHeaders;
-  } else {
-    return {
-      ...otherHeaders,
-      Authorization: `Bearer ${token}`
-    };
+    return promise;
   }
+
+  function addAuthHeader(otherHeaders = {}) {
+    if (token === INVALID_TOKEN) {
+      return otherHeaders;
+    } else {
+      return {
+        ...otherHeaders,
+        Authorization: `Bearer ${token}`,
+      };
+    }
   }
 
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login handleSubmit={loginUser}/>} />
-        <Route path="/signup" element={<SignUp handleSubmit={signupUser} buttonLabel="Sign Up" />} />
+        <Route path="/login" element={<Login handleSubmit={loginUser} />} />
+        <Route
+          path="/signup"
+          element={<SignUp handleSubmit={signupUser} buttonLabel="Sign Up" />}
+        />
         <Route path="/profile/:userId" element={<ProfilePage />} />
         <Route path="*" element={<div>Not found</div>} />
       </Routes>

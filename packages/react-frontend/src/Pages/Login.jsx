@@ -24,13 +24,13 @@ function Login(props) {
             onChange={handleChange}
             placeholder="Username"
           />
-          <input 
-            type="password" 
+          <input
+            type="password"
             name="password"
             id="password"
             value={creds.password}
             onChange={handleChange}
-            placeholder="Password" 
+            placeholder="Password"
           />
           <input
             type="button"

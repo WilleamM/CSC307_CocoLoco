@@ -19,7 +19,8 @@ function addCommentToPost(postId, commentId) {
   ).lean();
 }
 
-function getCommentsByPostId(postId) { // sorts by newest
+function getCommentsByPostId(postId) {
+  // sorts by newest
   return Comment.find({ postId }).sort({ createdAt: 1 }).lean();
 }
 

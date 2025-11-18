@@ -9,12 +9,12 @@
 
 /* ← this is your rectangle */
 .signup-card {
-  width: 360px;              /* rectangle width */
-  padding: 24px;             /* inner spacing */
-  background: #fff;          /* fill color */
+  width: 360px; /* rectangle width */
+  padding: 24px; /* inner spacing */
+  background: #fff; /* fill color */
   border: 1px solid #e5e7eb; /* outline */
-  border-radius: 12px;       /* square → 0; more round → bigger */
-  box-shadow: 0 8px 24px rgba(0,0,0,.08); /* optional depth */
+  border-radius: 12px; /* square → 0; more round → bigger */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); /* optional depth */
 }
 
 .signup-form {

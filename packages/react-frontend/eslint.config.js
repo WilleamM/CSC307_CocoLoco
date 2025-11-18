@@ -26,9 +26,9 @@ export default defineConfig([
       },
     },
     rules: {
-    'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]' }],
-    'react-hooks/exhaustive-deps': 'warn',
-    'no-undef': 'warn',    
-  },
+      'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]' }],
+      'react-hooks/exhaustive-deps': 'warn',
+      'no-undef': 'warn',
+    },
   },
 ]);

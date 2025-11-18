@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       index: true,
       min_length: 3,
-      max_length: 20
+      max_length: 20,
     },
 
     displayName: {
@@ -36,11 +36,12 @@ const UserSchema = new mongoose.Schema(
       minlength: 1,
       maxlength: 50,
     },
-    
+
     // added a posts, followers, following for now
-    posts: { //might be an array in the future if they have more posts
+    posts: {
+      //might be an array in the future if they have more posts
       type: Number,
-      default: 0
+      default: 0,
     },
 
     followers: {
