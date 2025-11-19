@@ -42,7 +42,7 @@ function SignUp(props) {
         'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users',
         {
           userName,
-          displayName,
+          displayName,  
           password,
         }
       );
