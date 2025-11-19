@@ -17,7 +17,10 @@ export default defineConfig({
             join(__dirname, 'dist', 'staticwebapp.config.json')
           );
         } catch (error) {
-          console.warn('Could not copy staticwebapp.config.json:', error.message);
+          console.warn(
+            'Could not copy staticwebapp.config.json:',
+            error.message
+          );
         }
       },
     },
