@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import userServices from './services/user-services.js';
 import postServices from './services/post-services.js';
+import 'auth.js';
 
 // npx nodemon backend.js
 const app = express();
@@ -90,7 +91,7 @@ Example: POST http://localhost:8000/users
 app.post('/users', (req, res) => {
   console.log('BODY RECEIVED:', req.body);
   const { userName, displayName, password = '' } = req.body;
-  if (!userName || !displayName) {
+  if (!userName || !displayName || !password) {
     return res
       .status(400)
       .send('username, display name, and password are required!');
