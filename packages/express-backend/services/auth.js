@@ -1,27 +1,32 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-const creds = [];
-
 // registerUser: For creating a new user
 export function registerUser(req, res) {
-  const { username, pwd } = req.body; // from form
+  const { username, password } = req.body; // from form
 
-  if (!username || !pwd) {
-    res.status(400).send('Bad request: Invalid input data.');
+  if (!username || !password) {
+    error = new Error('Bad request: Invalid input data.');
+    error.statusCode = 400;
+    throw error;
   } else if (creds.find((c) => c.username === username)) {
-    res.status(409).send('Username already taken');
+    error = new Error('Username already taken.');
+    error.statusCode = 409;
+    throw error;
   } else {
-    bcrypt
+    promise = bcrypt
       .genSalt(10)
-      .then((salt) => bcrypt.hash(pwd, salt))
+      .then((salt) => bcrypt.hash(password, salt))
       .then((hashedPassword) => {
         generateAccessToken(username).then((token) => {
           console.log('Token:', token);
-          res.status(201).send({ token: token });
-          creds.push({ username, hashedPassword });
+          {
+            (hashedPassword, token);
+          }
         });
       });
+
+    return promise;
   }
 }
 
@@ -70,7 +75,7 @@ export function authenticateUser(req, res, next) {
 // loginUser: To validate provided credentials and generate an access token
 // Example usage in backend.js (make sure auth.js is imported):
 // updated from: *empty line*
-// to: app.post("/login", registerUser);
+// to: app.post("/login", loginUser);
 export function loginUser(req, res) {
   const { username, pwd } = req.body; // from form
   const retrievedUser = creds.find((c) => c.username === username);

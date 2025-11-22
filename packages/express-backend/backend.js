@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import userServices from './services/user-services.js';
 import postServices from './services/post-services.js';
-import 'auth.js';
+import './services/auth.js';
 
 // npx nodemon backend.js
 const app = express();
@@ -96,12 +96,18 @@ app.post('/users', (req, res) => {
       .status(400)
       .send('username, display name, and password are required!');
   }
-  userServices
-    .addUser({ userName, displayName, password })
-    .then((created) => res.status(201).send(created))
+
+  registerUser(req)
+    .then(({ hashedPassword, token }) => {
+      userServices
+        .addUser({ userName, displayName, password: hashedPassword })
+        .then((created) => {
+          res.status(201).send({ user: created, token });
+        });
+    })
     .catch((err) => {
       console.error(err);
-      res.status(400).send(err.message ?? 'Failed to create user');
+      res.status(err.statusCode).send(err.message ?? 'Failed to create user');
     });
 });
 
