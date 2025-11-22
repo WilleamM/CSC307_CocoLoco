@@ -26,38 +26,16 @@ function SignUp(props) {
     }
   };
 
-  // checks when you input text into text boxes
-  // then setPerson updates person
-
-  function submitForm() {
-    props.handleSubmit(creds);
-    setCreds({ userName: '', displayName: '', password: '' });
-  }
-
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { userName, displayName, password } = creds;
-      const response = await axios.post(
-        'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users',
-        {
-          userName,
-          displayName,
-          password,
-        }
-      );
-      console.log('User registered:', response.data);
+      await props.handleSubmit(creds);
       setMsg('User successfully Created!');
       // Handle successful registration (e.g., redirect, show success message)
+
     } catch (error) {
       console.error('Error registering user:', error);
       setMsg(error.response?.data || 'Error Creating User');
-      console.log(
-        'Status:',
-        error.response?.status,
-        'Body:',
-        error.response?.data
-      );
     }
   };
 
@@ -67,7 +45,7 @@ function SignUp(props) {
         {' '}
         {/* ← the rectangle */}
         <h1>Sign Up</h1>
-        <form className="signup-form">
+        <form className="signup-form" onSubmit={onSubmit}>
           <input
             type="text"
             name="userName"
@@ -93,9 +71,8 @@ function SignUp(props) {
             onChange={handleChange}
           />
           <input
-            type="button"
+            type="submit"
             value={props.buttonLabel || 'Sign Up'}
-            onClick={handleSubmit}
           />
         </form>
         {msg && <p>{msg}</p>}

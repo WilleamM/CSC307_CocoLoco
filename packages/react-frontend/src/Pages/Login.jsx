@@ -8,6 +8,37 @@ function Login(props) {
     userName: '',
     password: '',
   });
+  const [msg, setMsg] = useState('');
+
+  // checks when you input text into text boxes
+  function handleChange(event) {
+    const { name, value } = event.target;
+    switch (name) {
+      case 'userName':
+        setCreds({ ...creds, userName: value });
+        break;
+      case 'password':
+        setCreds({ ...creds, password: value });
+        break;
+    }
+  }
+
+  const submitForm = async (event) => {
+    event.preventDefault();
+    try{
+      await props.handleSubmit(creds);
+      setMsg("User successfully logged in!\n");
+    }catch(error){
+      console.error('Error logging user:', error);
+      setMsg(error.response?.data || 'Error logging User');
+      console.log(
+        'Status:',
+        error.response?.status,
+        'Body:',
+        error.response?.data
+      );
+    }
+  }
 
   return (
     <div className="login">
@@ -15,7 +46,7 @@ function Login(props) {
         {' '}
         {/* ← the rectangle */}
         <h1>Login</h1>
-        <form className="login-form">
+        <form className="login-form" onSubmit={submitForm}>
           <input
             type="text"
             name="userName"
@@ -33,9 +64,8 @@ function Login(props) {
             placeholder="Password"
           />
           <input
-            type="button"
+            type="submit"
             value={props.buttonLabel || 'Login'}
-            onClick={submitForm}
           />
         </form>
         <p>
@@ -45,23 +75,6 @@ function Login(props) {
     </div>
   );
 
-  // checks when you input text into text boxes
-  function handleChange(event) {
-    const { name, value } = event.target;
-    switch (name) {
-      case 'userName':
-        setCreds({ ...creds, userName: value });
-        break;
-      case 'password':
-        setCreds({ ...creds, password: value });
-        break;
-    }
-  }
-
-  function submitForm() {
-    props.handleSubmit(creds);
-    setCreds({ userName: '', password: '' });
-  }
 }
 
 export default Login;

@@ -27,6 +27,15 @@ function MyApp() {
   const [message, setMessage] = useState('');
   const [characters, setCharacters] = useState(null);
 
+  //This is going to be used to keep the user logged in
+  useEffect(() => {
+    const savedToken = localStorage.getItem('authToken');
+    if(savedToken){
+      setToken(savedToken);
+    }
+  }, []);
+
+
   function loginUser(creds) {
     const promise = fetch(`${API_PREFIX}/login`, {
       method: 'POST',
@@ -37,9 +46,12 @@ function MyApp() {
     })
       .then((response) => {
         if (response.status === 200) {
-          response.json().then((payload) => setToken(payload.token));
+          response.json().then((payload) => {
+          setToken(payload.token);
+          localStorage.setItem("authToken", payload.token); //Used to store the authentication token in local storage
           setMessage(`Login successful; auth token saved`);
-        } else {
+        });
+        }else {
           setMessage(`Login Error ${response.status}: ${response.data}`);
         }
       })
@@ -48,6 +60,12 @@ function MyApp() {
       });
 
     return promise;
+  }
+
+  //This is going to be used to logout the user
+  function logoutUser(){
+    setToken(INVALID_TOKEN);
+    localStorage.removeItem('authToken');
   }
 
   function signupUser(creds) {
@@ -60,11 +78,14 @@ function MyApp() {
     })
       .then((response) => {
         if (response.status === 201) {
-          response.json().then((payload) => setToken(payload.token));
+          response.json().then((payload) => {
+          setToken(payload.token);
+          localStorage.setItem("authToken", payload.token); //Used to store the authentication token in local storage
           setMessage(
             `Signup successful for user: ${creds.username}; auth token saved`
           );
-        } else {
+        });
+        }else {
           setMessage(`Signup Error ${response.status}: ${response.data}`);
         }
       })
