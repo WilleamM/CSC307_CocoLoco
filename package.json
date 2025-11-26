@@ -26,10 +26,13 @@
     "packages/*"
   ],
   "devDependencies": {
-    "eslint": "^9.38.0",
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
-    "nodemon": "^3.1.10",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.5.0",
+    "nodemon": "^3.1.11",
     "prettier": "^3.6.2"
   },
   "dependencies": {
@@ -43,6 +46,6 @@
     "concurrently": "^9.2.1",
     "cors": "^2.8.5",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.2"
+    "mongoose": "^8.20.1"
   }
 }

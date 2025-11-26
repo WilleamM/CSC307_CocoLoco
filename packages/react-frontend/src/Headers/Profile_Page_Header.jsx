@@ -1,53 +1,61 @@
 // this will be the header for the profile page
 
+import React from 'react';
+import './Profile_Page_Header.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faHouse,
+  faUserGroup,
+  faUsers,
+  faArrowUp,
+} from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
-import "./Profile_Page_Header.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse,faUserGroup, faUsers, faArrowUp  } from '@fortawesome/free-solid-svg-icons'
+function Profile_Page_Header() {
+  const navigate = useNavigate(); //initializes the navigate function
 
+  const goToHome = () => {
+    navigate('/'); //this will go to the front page
+  };
+  const goToFriendsOnly = () => {
+    navigate('/friends-only'); //this will take the user to the friends only once clicked
+  };
+  const goToMakePost = () => {
+    navigate('/create-post'); //this will go to making a new post page when the upload clicked
+  };
 
-
-
-function Profile_Page_Header(){
-  return(
-   <header className="front-page-header">
+  return (
+    <header className="front-page-header">
       <div className="left-section">
-          <div className="main-logo">
-              <img src="/Locobook.png" alt="Logo" />
-          </div>
-          <div className="search-bar">
-              <input type="text" placeholder="Search Locobook" />
-          </div>
+        <div className="main-logo">
+          <img src="/Locobook.png" alt="Logo" />
+        </div>
+        <div className="search-bar">
+          <input type="text" placeholder="Search Locobook" />
+        </div>
       </div>
-
-
-
 
       <div className="middle-section">
-          <button className="home-icon"><FontAwesomeIcon icon={faHouse}/></button>
-          <button className="friends-only-icon"> <FontAwesomeIcon icon={faUserGroup}/></button>
+        <button className="home-icon" onClick={goToHome}>
+          <FontAwesomeIcon icon={faHouse} />
+        </button>
+        <button className="friends-only-icon" onClick={goToFriendsOnly}>
+          <FontAwesomeIcon icon={faUserGroup} />
+        </button>
       </div>
-
-
-
 
       <div className="right-section">
-          <div className="upload">
-              <button>
-                  <div className="up-arrow"><FontAwesomeIcon icon={faArrowUp}/></div>
-                  <span className="upload-text">Upload</span>
-              </button>
-          </div>
+        <div className="upload">
+          <button onClick={goToMakePost}>
+            <div className="up-arrow">
+              <FontAwesomeIcon icon={faArrowUp} />
+            </div>
+            <span className="upload-text">Upload</span>
+          </button>
+        </div>
       </div>
-  </header>
-);
-
-
-
-
+    </header>
+  );
 }
-
-
-
 
 export default Profile_Page_Header;

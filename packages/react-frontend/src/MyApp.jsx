@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import ProfilePage from './Pages/Profile_Page.jsx';
 import Login from './Pages/Login.jsx';
 import SignUp from './Pages/SignUp.jsx';
+import Page_Header from './Headers/Page_Header.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
 const API_PREFIX =
@@ -111,6 +112,7 @@ function MyApp() {
 
   return (
     <Router>
+      <Page_Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login handleSubmit={loginUser} />} />
