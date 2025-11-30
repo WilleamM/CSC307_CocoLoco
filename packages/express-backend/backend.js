@@ -76,6 +76,24 @@ app.get('/users/:id', (req, res) => {
     });
 });
 
+// GET /suggested-users
+// Returns 3 random users based off if the user doesn't have them added
+app.get('/suggested-users', (req, res) => {
+  const id = req.query.id;
+  if (!id) {
+    return res.status(400).send('Id is required');
+  }
+  userServices
+    .getSuggestedUsers(id)
+    .then((suggestedUsers) => {
+      res.status(200).send(suggestedUsers);
+    })
+    .catch((error) => {
+      console.error('Error fetching suggested users', error);
+      res.status(500);
+    });
+});
+
 // POST /users
 /*
 Example: POST http://localhost:8000/users

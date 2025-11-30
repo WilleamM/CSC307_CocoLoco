@@ -22,10 +22,28 @@ function updateUser(id, updates) {
   return userModel.findByIdAndUpdate(id, updates, { new: true });
 }
 
+function getSuggestedUsers(userId) {
+  return User.findById(userId)
+    .then((user) => {
+      if (!user) throw new Error('User not found');
+
+      return User.aggregate([
+        { $match: { _id: { $ne: userId } } }, // excludes the logged-in user
+        { $match: { _id: { $nin: user.following } } }, // excludes followed users
+        { $sample: { size: 3 } }, // randomly gets 3 users
+        { $project: { userName: 1, displayName: 1, avatarUrl: 1 } }, // only the fields needed
+      ]);
+    })
+    .catch((err) => {
+      console.error('Error fetching suggested users:', err);
+    });
+}
+
 export default {
   addUser,
   getAllUsers,
   findUserById,
   deleteUserById,
   updateUser,
+  getSuggestedUsers,
 };
