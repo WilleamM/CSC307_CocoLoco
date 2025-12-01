@@ -22,16 +22,15 @@ const FrontPage = () => {
     loadingRef.current = true; // Mark as loading
 
     try {
-      const response = await axios.get('http://localhost:8000/posts', {
-        params: { userId },
-      });
+      const response = await axios.get(
+        'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts'
+      );
 
-      const newPosts = response.data.posts || [];
-      if (newPosts.length === 0) {
-        hasMorePostsRef.current = false; // No more posts to load
-      }
+      const newPosts = response.data.posts_list || [];
 
-      setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+      // Overwrite posts with the full list from the backend and stop further loads
+      setPosts(newPosts);
+      hasMorePostsRef.current = false;
     } catch (error) {
       console.error('Error fetching posts:', error);
     } finally {
@@ -44,7 +43,7 @@ const FrontPage = () => {
     setPosts([]);
     hasMorePostsRef.current = true;
     fetchPosts(); // Initial fetch when component mounts
-  }, [userId]); // Fetch posts when `userId` changes
+  }, []); // Fetch posts when component mounts
 
   // Fetch suggested users
   useEffect(() => {
@@ -65,18 +64,8 @@ const FrontPage = () => {
     fetchSuggestedUsers();
   }, [userId]); // Fetch suggested users when `userId` changes
 
-  // Handle infinite scroll
-  const handleScroll = (e) => {
-    const bottom =
-      e.target.scrollHeight === e.target.scrollTop + e.target.clientHeight;
-    if (bottom && hasMorePostsRef.current) {
-      // If the bottom of the page is reached, fetch more posts
-      fetchPosts();
-    }
-  };
-
   return (
-    <div className="front-page" onScroll={handleScroll}>
+    <div className="front-page">
       {/* Left Column: Suggested Users */}
       <div className="left-column">
         <span className="left-text">Suggested For You</span>
@@ -108,7 +97,7 @@ const FrontPage = () => {
             <div className="top-of-rec">
               <div className="post-header">
                 <div className="profile-info">
-                  <div className="display-name">{post.author.userName}</div>
+                  <div className="display-name">{post.author}</div>
                   <div className="post-date">
                     {new Date(post.publishedAt).toLocaleDateString()}
                   </div>
@@ -120,7 +109,6 @@ const FrontPage = () => {
             <div className="mid-of-rec">
               <img
                 src={
-                  post.media[0] ||
                   'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
                 }
                 alt="post"
@@ -140,12 +128,6 @@ const FrontPage = () => {
                   <button>
                     <FontAwesomeIcon icon={faComment} />
                     <span>{post.comments.length} Comments</span>
-                  </button>
-                </div>
-                <div className="share">
-                  <button>
-                    <FontAwesomeIcon icon={faShare} />
-                    <span>Share</span>
                   </button>
                 </div>
               </div>

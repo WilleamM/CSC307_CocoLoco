@@ -1,4 +1,4 @@
-/* General Reset */
+
 * {
   margin: 0;
   padding: 0;
@@ -137,14 +137,14 @@ button:hover {
 }
 
 .like,
-.comment,
-.share {
+.comment{
   display: flex;
   align-items: center;
 }
 
 button span {
   font-size: 14px;
+  color: white;
 }
 
 .like-icon,
