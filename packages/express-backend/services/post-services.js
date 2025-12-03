@@ -70,10 +70,20 @@ function pullCommentFromPost(postId, commentId) {
   ).lean();
 }
 
+function findPostById(id) {
+  return Post.findById(id).lean();
+}
+
+function findPostByIdForUpdate(id) {
+  return Post.findById(id); // Returns Mongoose document (not lean) for updates
+}
+
 export default {
   getPosts,
   getPostsNoSearchTerms,
   createPost,
   deletePostById,
   pullCommentFromPost,
+  findPostById,
+  findPostByIdForUpdate,
 };

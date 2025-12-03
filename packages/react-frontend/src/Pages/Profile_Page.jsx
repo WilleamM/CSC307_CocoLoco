@@ -80,7 +80,7 @@ const ProfilePage = () => {
               formData.append('avatar', file);
 
               try {
-                const response = await axios.post(
+                await axios.post(
                   `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}/avatar`,
                   formData,
                   { headers: { 'Content-Type': 'multipart/form-data' } }
@@ -131,7 +131,22 @@ const ProfilePage = () => {
             if (userPost && userPost.length > 0) {
               return userPost.map((post) => (
                 <div key={post._id} className="post-item">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png" />
+                  {post.image ? (
+                    <img
+                      src={`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${post._id}/image`}
+                      alt="post"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src =
+                          'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                      alt="post placeholder"
+                    />
+                  )}
                 </div>
               ));
             } else {

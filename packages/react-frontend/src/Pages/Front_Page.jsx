@@ -108,14 +108,19 @@ const FrontPage = () => {
               </div>
             </div>
 
-            <div className="mid-of-rec">
-              <img
-                src={
-                  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
-                }
-                alt="post"
-              />
-            </div>
+            {post.image && (
+              <div className="mid-of-rec">
+                <img
+                  src={`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${post._id}/image`}
+                  alt="post"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+                  }}
+                />
+              </div>
+            )}
 
             <div className="bottom-of-rec">
               <div className="actions-bot-header">

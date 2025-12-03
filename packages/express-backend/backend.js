@@ -78,9 +78,13 @@ app.post('/posts', upload.single('image'), (req, res) => {
 app.get('/posts/:id/image', (req, res) => {
   const id = req.params.id;
   postServices
-    .findPostById(id)
+    .findPostByIdForUpdate(id)
     .then((post) => {
-      if (!post || !post.image) {
+      if (!post) {
+        return res.status(404).send('Post not found');
+      }
+
+      if (!post.image || !post.imageContentType) {
         return res.status(404).send('Image not found');
       }
 
@@ -90,6 +94,56 @@ app.get('/posts/:id/image', (req, res) => {
     .catch((error) => {
       console.error(error);
       res.status(500).send('Failed to fetch image');
+    });
+});
+
+// PUT /posts/:id/image
+// Adds or updates an image for an existing post
+app.put('/posts/:id/image', upload.single('image'), (req, res) => {
+  const id = req.params.id;
+  if (!req.file) {
+    return res.status(400).send('No file uploaded.');
+  }
+
+  // Validate file type
+  const allowedMimeTypes = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+  ];
+  if (!allowedMimeTypes.includes(req.file.mimetype)) {
+    return res.status(400).send('Invalid file type. Only images are allowed.');
+  }
+
+  // Validate file size (5MB limit)
+  const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+  if (req.file.size > maxSize) {
+    return res.status(400).send('File too large. Maximum size is 5MB.');
+  }
+
+  postServices
+    .findPostByIdForUpdate(id)
+    .then((post) => {
+      if (!post) {
+        return res.status(404).send('Post not found');
+      }
+
+      post.image = req.file.buffer;
+      post.imageContentType = req.file.mimetype;
+
+      return post.save();
+    })
+    .then((post) => {
+      res.send({
+        message: 'Post image uploaded successfully',
+        postId: post._id,
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Failed to upload post image');
     });
 });
 
