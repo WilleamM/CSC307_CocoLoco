@@ -33,8 +33,9 @@ app.get('/posts', (req, res) => {
   const author = req.query.author;
   const date = req.query.date;
   const search_terms = req.query.terms;
+  const authorId = req.query.authorId;
   postServices
-    .getPosts(author, date, search_terms)
+    .getPosts(author, date, search_terms, authorId)
     .then((posts) => res.send({ posts_list: posts }))
     .catch((err) => {
       console.error(err);
