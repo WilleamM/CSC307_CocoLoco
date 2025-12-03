@@ -29,11 +29,6 @@ function SignUp(props) {
   // checks when you input text into text boxes
   // then setPerson updates person
 
-  function submitForm() {
-    props.handleSubmit(creds);
-    setCreds({ userName: '', displayName: '', password: '' });
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

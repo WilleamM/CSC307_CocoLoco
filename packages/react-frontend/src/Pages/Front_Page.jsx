@@ -2,12 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faComment,
-  faShare,
-  faThumbsUp,
-} from '@fortawesome/free-solid-svg-icons';
-import './front_page.css';
+import { faComment, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+import './Front_Page.css';
 
 const FrontPage = () => {
   const { userId } = useParams();
@@ -19,7 +15,7 @@ const FrontPage = () => {
   const fetchPosts = async () => {
     if (loadingRef.current || !hasMorePostsRef.current) return; // prevents if already loading or no more posts
 
-    loadingRef.current = true; // mark as loading 
+    loadingRef.current = true; // mark as loading
 
     try {
       const response = await axios.get(
@@ -28,7 +24,7 @@ const FrontPage = () => {
 
       const newPosts = response.data.posts_list || [];
 
-      // full list of posts from the backend 
+      // full list of posts from the backend
       setPosts(newPosts);
       hasMorePostsRef.current = false;
     } catch (error) {
@@ -42,8 +38,8 @@ const FrontPage = () => {
   useEffect(() => {
     setPosts([]);
     hasMorePostsRef.current = true;
-    fetchPosts(); 
-  }, []); 
+    fetchPosts();
+  }, []);
 
   // Fetch suggested users
   useEffect(() => {
