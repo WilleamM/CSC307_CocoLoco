@@ -58,8 +58,8 @@ const ProfilePage = () => {
           <img
             src={
               userData.avatarUrl
-                ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${userData.avatarUrl}`
-                : 'https://example.com/avatar.jpg'
+                ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${userData.avatarUrl}?t=${userData.updatedAt || Date.now()}`
+                : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
             }
             alt="Profile"
             onError={(e) => {
@@ -80,13 +80,17 @@ const ProfilePage = () => {
               formData.append('avatar', file);
 
               try {
-                await axios.post(
+                const response = await axios.post(
                   `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}/avatar`,
                   formData,
                   { headers: { 'Content-Type': 'multipart/form-data' } }
                 );
-                // Refresh user data to show new image
-                window.location.reload();
+                // Refetch user data to get updated avatarUrl
+                const userResponse = await axios.get(
+                  `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
+                );
+                setUserData(userResponse.data);
+                console.log('Avatar uploaded successfully');
               } catch (error) {
                 console.error('Error uploading avatar:', error);
                 alert('Failed to upload avatar');

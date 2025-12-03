@@ -188,8 +188,9 @@ app.post('/users/:id/avatar', upload.single('avatar'), (req, res) => {
 // Retrieves a user's profile picture
 app.get('/users/:id/avatar', (req, res) => {
   const id = req.params.id;
+  // Use findUserByIdForUpdate to get actual Buffer (not lean)
   userServices
-    .findUserById(id)
+    .findUserByIdForUpdate(id)
     .then((user) => {
       if (!user) {
         return res.status(404).send('User not found');
