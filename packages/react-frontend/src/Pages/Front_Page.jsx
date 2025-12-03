@@ -12,14 +12,14 @@ import './front_page.css';
 const FrontPage = () => {
   const { userId } = useParams();
   const [posts, setPosts] = useState([]);
-  const [suggestedUsers, setSuggestedUsers] = useState([]); // Store suggested users
-  const hasMorePostsRef = useRef(true); // Track if there are more posts to load
-  const loadingRef = useRef(false); // Track if data is being fetched
+  const [suggestedUsers, setSuggestedUsers] = useState([]); // store suggested users
+  const hasMorePostsRef = useRef(true); // tracks if there are more posts to load
+  const loadingRef = useRef(false); // tracks if data is being fetched
 
   const fetchPosts = async () => {
-    if (loadingRef.current || !hasMorePostsRef.current) return; // Prevent if already loading or no more posts
+    if (loadingRef.current || !hasMorePostsRef.current) return; // prevents if already loading or no more posts
 
-    loadingRef.current = true; // Mark as loading
+    loadingRef.current = true; // mark as loading 
 
     try {
       const response = await axios.get(
@@ -28,29 +28,29 @@ const FrontPage = () => {
 
       const newPosts = response.data.posts_list || [];
 
-      // Overwrite posts with the full list from the backend and stop further loads
+      // full list of posts from the backend 
       setPosts(newPosts);
       hasMorePostsRef.current = false;
     } catch (error) {
       console.error('Error fetching posts:', error);
     } finally {
-      loadingRef.current = false; // Reset loading state
+      loadingRef.current = false; // resets loading state
     }
   };
 
-  // Fetch posts for the user
+  // fetches posts for the user
   useEffect(() => {
     setPosts([]);
     hasMorePostsRef.current = true;
-    fetchPosts(); // Initial fetch when component mounts
-  }, []); // Fetch posts when component mounts
+    fetchPosts(); 
+  }, []); 
 
   // Fetch suggested users
   useEffect(() => {
     const fetchSuggestedUsers = async () => {
       try {
         const response = await axios.get(
-          'http://localhost:8000/suggested-users',
+          'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/suggested-users',
           {
             params: { userId },
           }
@@ -112,7 +112,6 @@ const FrontPage = () => {
                   'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
                 }
                 alt="post"
-                loading="lazy"
               />
             </div>
 
