@@ -5,6 +5,7 @@ import Login from './Pages/Login.jsx';
 import SignUp from './Pages/SignUp.jsx';
 import Page_Header from './Headers/Page_Header.jsx';
 import FrontPage from './Pages/Front_Page.jsx';
+import CreatePost from './Pages/Create_Post.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
 const API_PREFIX =
@@ -26,8 +27,6 @@ function Home() {
 function MyApp() {
   const INVALID_TOKEN = 'INVALID_TOKEN';
   const [token, setToken] = useState(INVALID_TOKEN);
-  const [message, setMessage] = useState('');
-  const [characters, setCharacters] = useState(null);
 
   function loginUser(creds) {
     const promise = fetch(`${API_PREFIX}/login`, {
@@ -40,13 +39,13 @@ function MyApp() {
       .then((response) => {
         if (response.status === 200) {
           response.json().then((payload) => setToken(payload.token));
-          setMessage(`Login successful; auth token saved`);
+          console.log(`Login successful; auth token saved`);
         } else {
-          setMessage(`Login Error ${response.status}: ${response.data}`);
+          console.log(`Login Error ${response.status}: ${response.data}`);
         }
       })
       .catch((error) => {
-        setMessage(`Login Error: ${error}`);
+        console.log(`Login Error: ${error}`);
       });
 
     return promise;
@@ -63,53 +62,53 @@ function MyApp() {
       .then((response) => {
         if (response.status === 201) {
           response.json().then((payload) => setToken(payload.token));
-          setMessage(
+          console.log(
             `Signup successful for user: ${creds.username}; auth token saved`
           );
         } else {
-          setMessage(`Signup Error ${response.status}: ${response.data}`);
+          console.log(`Signup Error ${response.status}: ${response.data}`);
         }
       })
       .catch((error) => {
-        setMessage(`Signup Error: ${error}`);
+        console.log(`Signup Error: ${error}`);
       });
 
     return promise;
   }
 
   useEffect(() => {
+    function addAuthHeader(otherHeaders = {}) {
+      if (token === INVALID_TOKEN) {
+        return otherHeaders;
+      } else {
+        return {
+          ...otherHeaders,
+          Authorization: `Bearer ${token}`,
+        };
+      }
+    }
+
+    function fetchUsers() {
+      const promise = fetch(`${API_PREFIX}/users`, {
+        headers: addAuthHeader(),
+      });
+
+      return promise;
+    }
+
     fetchUsers()
       .then((res) => (res.status === 200 ? res.json() : undefined))
       .then((json) => {
         if (json) {
-          setCharacters(json['users_list']);
+          console.log('Users fetched successfully');
         } else {
-          setCharacters(null);
+          console.log('Failed to fetch users');
         }
       })
       .catch((error) => {
         console.log(error);
       });
   }, [token]);
-
-  function fetchUsers() {
-    const promise = fetch(`${API_PREFIX}/users`, {
-      headers: addAuthHeader(),
-    });
-
-    return promise;
-  }
-
-  function addAuthHeader(otherHeaders = {}) {
-    if (token === INVALID_TOKEN) {
-      return otherHeaders;
-    } else {
-      return {
-        ...otherHeaders,
-        Authorization: `Bearer ${token}`,
-      };
-    }
-  }
 
   return (
     <Router>
@@ -121,6 +120,7 @@ function MyApp() {
           path="/signup"
           element={<SignUp handleSubmit={signupUser} buttonLabel="Sign Up" />}
         />
+        <Route path="/create-post" element={<CreatePost />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
         <Route path="*" element={<div>Not found</div>} />
       </Routes>

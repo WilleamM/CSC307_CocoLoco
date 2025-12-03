@@ -56,6 +56,8 @@ const UserSchema = new mongoose.Schema(
 
     // Profile info
     bio: { type: String, default: '', max_length: 500 },
+    avatar: { type: Buffer },
+    avatarContentType: { type: String },
     avatarUrl: { type: String, default: 'cry.png' }, // TODO: add url handling
 
     // Lists

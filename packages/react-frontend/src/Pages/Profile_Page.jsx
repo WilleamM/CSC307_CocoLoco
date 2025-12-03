@@ -7,6 +7,8 @@ const ProfilePage = () => {
   const { userId } = useParams();
   const [userData, setUserData] = useState(null);
   const [userPost, setUserPost] = useState(null);
+  const placeholderImage =
+    'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
   // will fetch user data from the backend
   useEffect(() => {
@@ -55,7 +57,48 @@ const ProfilePage = () => {
     <div className="profile-container">
       <div className="profile-header">
         <div className="profile-image">
-          <img src={userData.avatarUrl || 'https://example.com/avatar.jpg'} />
+          <img
+            src={
+              userData.avatarUrl
+                ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${userData.avatarUrl}?t=${userData.updatedAt || Date.now()}`
+                : placeholderImage
+            }
+            alt="Profile"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = placeholderImage;
+            }}
+          />
+          {/* Simple file input for uploading avatar */}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+
+              const formData = new FormData();
+              formData.append('avatar', file);
+
+              try {
+                await axios.post(
+                  `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}/avatar`,
+                  formData,
+                  { headers: { 'Content-Type': 'multipart/form-data' } }
+                );
+                // Refetch user data to get updated avatarUrl
+                const userResponse = await axios.get(
+                  `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
+                );
+                setUserData(userResponse.data);
+                console.log('Avatar uploaded successfully');
+              } catch (error) {
+                console.error('Error uploading avatar:', error);
+                alert('Failed to upload avatar');
+              }
+            }}
+            style={{ marginTop: '10px' }}
+          />
         </div>
         <div className="profile-info">
           <h2 className="display-name">{userData.displayName}</h2>
@@ -89,7 +132,18 @@ const ProfilePage = () => {
             if (userPost && userPost.length > 0) {
               return userPost.map((post) => (
                 <div key={post._id} className="post-item">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png" />
+                  <img
+                    src={
+                      post.image
+                        ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${post._id}/image`
+                        : placeholderImage
+                    }
+                    alt="post"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = placeholderImage;
+                    }}
+                  />
                 </div>
               ));
             } else {

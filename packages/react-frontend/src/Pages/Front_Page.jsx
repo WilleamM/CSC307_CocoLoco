@@ -14,11 +14,13 @@ const FrontPage = () => {
   const [suggestedUsers, setSuggestedUsers] = useState([]); // store suggested users
   const hasMorePostsRef = useRef(true); // tracks if there are more posts to load
   const loadingRef = useRef(false); // tracks if data is being fetched
+  const placeholderImage =
+    'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
   const fetchPosts = async () => {
     if (loadingRef.current || !hasMorePostsRef.current) return; // prevents if already loading or no more posts
 
-    loadingRef.current = true; // mark as loading 
+    loadingRef.current = true; // mark as loading
 
     try {
       const response = await axios.get(
@@ -27,7 +29,7 @@ const FrontPage = () => {
 
       const newPosts = response.data.posts_list || [];
 
-      // full list of posts from the backend 
+      // full list of posts from the backend
       setPosts(newPosts);
       hasMorePostsRef.current = false;
     } catch (error) {
@@ -41,8 +43,8 @@ const FrontPage = () => {
   useEffect(() => {
     setPosts([]);
     hasMorePostsRef.current = true;
-    fetchPosts(); 
-  }, []); 
+    fetchPosts();
+  }, []);
 
   // Fetch suggested users
   useEffect(() => {
@@ -75,10 +77,15 @@ const FrontPage = () => {
               <div className="profile-image">
                 <img
                   src={
-                    user.avatarUrl ||
-                    'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
+                    user.avatarUrl
+                      ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${user.avatarUrl}`
+                      : placeholderImage
                   }
                   alt="profile"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = placeholderImage;
+                  }}
                 />
               </div>
               <div className="display-name">{user.displayName}</div>
@@ -105,14 +112,18 @@ const FrontPage = () => {
               </div>
             </div>
 
-            <div className="mid-of-rec">
-              <img
-                src={
-                  'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
-                }
-                alt="post"
-              />
-            </div>
+            {post.image && (
+              <div className="mid-of-rec">
+                <img
+                  src={`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${post._id}/image`}
+                  alt="post"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = placeholderImage;
+                  }}
+                />
+              </div>
+            )}
 
             <div className="bottom-of-rec">
               <div className="actions-bot-header">

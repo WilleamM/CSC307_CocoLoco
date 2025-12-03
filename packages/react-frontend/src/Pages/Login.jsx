@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import axios from 'axios'; // fetches data from an API
 import './Login.css';
 
 function Login(props) {
