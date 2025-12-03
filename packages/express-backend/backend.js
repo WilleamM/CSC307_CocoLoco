@@ -44,7 +44,7 @@ app.get('/posts', (req, res) => {
 
 // POST /posts
 // Creates a new post with optional image
-app.post('/posts', upload.single('image'), async (req, res) => {
+app.post('/posts', upload.single('image'), (req, res) => {
   const { authorId, author, title, body, visibility } = req.body;
 
   if (!authorId || !author || !body) {
@@ -64,31 +64,33 @@ app.post('/posts', upload.single('image'), async (req, res) => {
     newPost.imageContentType = req.file.mimetype;
   }
 
-  try {
-    const savedPost = await postServices.addPost(newPost);
-    res.status(201).send(savedPost);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Failed to create post');
-  }
+  postServices
+    .addPost(newPost)
+    .then((savedPost) => res.status(201).send(savedPost))
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Failed to create post');
+    });
 });
 
 // GET /posts/:id/image
 // Retrieves a post's image
-app.get('/posts/:id/image', async (req, res) => {
+app.get('/posts/:id/image', (req, res) => {
   const id = req.params.id;
-  try {
-    const post = await postServices.findPostById(id);
-    if (!post || !post.image) {
-      return res.status(404).send('Image not found');
-    }
+  postServices
+    .findPostById(id)
+    .then((post) => {
+      if (!post || !post.image) {
+        return res.status(404).send('Image not found');
+      }
 
-    res.set('Content-Type', post.imageContentType);
-    res.send(post.image);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Failed to fetch image');
-  }
+      res.set('Content-Type', post.imageContentType);
+      res.send(post.image);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Failed to fetch image');
+    });
 });
 
 // ------------------USERS------------------
@@ -132,54 +134,59 @@ app.get('/users/:id', (req, res) => {
 
 // POST /users/:id/avatar
 // Uploads a profile picture for a user
-app.post('/users/:id/avatar', upload.single('avatar'), async (req, res) => {
+app.post('/users/:id/avatar', upload.single('avatar'), (req, res) => {
   const id = req.params.id;
   if (!req.file) {
     return res.status(400).send('No file uploaded.');
   }
 
-  try {
-    const user = await userServices.findUserById(id);
-    if (!user) {
-      return res.status(404).send('User not found');
-    }
+  userServices
+    .findUserById(id)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
 
-    user.avatar = req.file.buffer;
-    user.avatarContentType = req.file.mimetype;
-    // Update avatarUrl to point to the new endpoint
-    // Note: In a real app, you might want a stable URL or a timestamp to bust cache
-    user.avatarUrl = `/users/${id}/avatar`;
+      user.avatar = req.file.buffer;
+      user.avatarContentType = req.file.mimetype;
+      // Update avatarUrl to point to the new endpoint
+      user.avatarUrl = `/users/${id}/avatar`;
 
-    await user.save();
-    res.send({
-      message: 'Avatar uploaded successfully',
-      avatarUrl: user.avatarUrl,
+      return user.save();
+    })
+    .then((user) => {
+      res.send({
+        message: 'Avatar uploaded successfully',
+        avatarUrl: user.avatarUrl,
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Failed to upload avatar');
     });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Failed to upload avatar');
-  }
 });
 
 // GET /users/:id/avatar
 // Retrieves a user's profile picture
-app.get('/users/:id/avatar', async (req, res) => {
+app.get('/users/:id/avatar', (req, res) => {
   const id = req.params.id;
-  try {
-    const user = await userServices.findUserById(id);
-    if (!user || !user.avatar) {
-      // Redirect to default avatar or send 404
-      return res.redirect(
-        'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
-      );
-    }
+  userServices
+    .findUserById(id)
+    .then((user) => {
+      if (!user || !user.avatar) {
+        // Redirect to default avatar or send 404
+        return res.redirect(
+          'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
+        );
+      }
 
-    res.set('Content-Type', user.avatarContentType);
-    res.send(user.avatar);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Failed to fetch avatar');
-  }
+      res.set('Content-Type', user.avatarContentType);
+      res.send(user.avatar);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Failed to fetch avatar');
+    });
 });
 
 // GET /suggested-users
