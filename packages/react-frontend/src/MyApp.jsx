@@ -81,10 +81,10 @@ function MyApp() {
   }
 
   //This is going to be used to logout the user
-  function logoutUser() {
-    setToken(INVALID_TOKEN);
-    localStorage.removeItem('authToken');
-  }
+  //function logoutUser() {
+  //  setToken(INVALID_TOKEN);
+  //  localStorage.removeItem('authToken');
+  //}
 
   function signupUser(creds) {
     const promise = fetch(`${API_PREFIX}/signup`, {
