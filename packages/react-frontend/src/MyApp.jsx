@@ -16,7 +16,7 @@ import FrontPage from './Pages/Front_Page.jsx';
 import CreatePost from './Pages/Create_Post.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
-const API_PREFIX = 'http://localhost:8000'; //"https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net";
+const API_PREFIX = "https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net"; //'http://localhost:8000'; 
 
 //Home page
 function Home() {
@@ -42,7 +42,7 @@ function ProtectedRoute({ token, children }) {
 // <Table characterData={characters}/> where characters is being passed to table as a prop
 function MyApp() {
   const [token, setToken] = useState(INVALID_TOKEN);
-
+  const [message, setMessage] = useState('');
   //This is going to be used to keep the user logged in
   useEffect(() => {
     const savedToken = localStorage.getItem('authToken');
