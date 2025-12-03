@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "concurrently -k -n server,client -c auto \"npm:server\" \"npm:client\"",
     "server": "cd packages/express-backend && npx nodemon backend.js",
@@ -27,12 +30,20 @@
   ],
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+<<<<<<< HEAD
     "eslint": "^9.38.0",
+=======
+    "eslint": "^9.39.1",
+>>>>>>> origin/main
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.5.0",
+<<<<<<< HEAD
     "nodemon": "^3.1.10",
+=======
+    "nodemon": "^3.1.11",
+>>>>>>> origin/main
     "prettier": "^3.6.2"
   },
   "dependencies": {
@@ -46,6 +57,6 @@
     "concurrently": "^9.2.1",
     "cors": "^2.8.5",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.2"
+    "mongoose": "^8.20.1"
   }
 }

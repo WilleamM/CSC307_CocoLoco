@@ -11,6 +11,9 @@ import Login from './Pages/Login.jsx';
 import SignUp from './Pages/SignUp.jsx';
 import User_page from './Pages/User_page.jsx';
 const INVALID_TOKEN = 'INVALID_TOKEN';
+import Page_Header from './Headers/Page_Header.jsx';
+import FrontPage from './Pages/Front_Page.jsx';
+import CreatePost from './Pages/Create_Post.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
 const API_PREFIX = 'http://localhost:8000'; //"https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net";
@@ -39,8 +42,6 @@ function ProtectedRoute({ token, children }) {
 // <Table characterData={characters}/> where characters is being passed to table as a prop
 function MyApp() {
   const [token, setToken] = useState(INVALID_TOKEN);
-  const [message, setMessage] = useState('');
-  const [characters, setCharacters] = useState(null);
 
   //This is going to be used to keep the user logged in
   useEffect(() => {
@@ -103,24 +104,43 @@ function MyApp() {
             return payload;
           });
         } else {
-          setMessage(`Signup Error ${response.status}: ${response.data}`);
+          console.log(`Signup Error ${response.status}: ${response.data}`);
         }
       })
       .catch((error) => {
-        setMessage(`Signup Error: ${error}`);
+        console.log(`Signup Error: ${error}`);
       });
 
     return promise;
   }
 
   useEffect(() => {
+    function addAuthHeader(otherHeaders = {}) {
+      if (token === INVALID_TOKEN) {
+        return otherHeaders;
+      } else {
+        return {
+          ...otherHeaders,
+          Authorization: `Bearer ${token}`,
+        };
+      }
+    }
+
+    function fetchUsers() {
+      const promise = fetch(`${API_PREFIX}/users`, {
+        headers: addAuthHeader(),
+      });
+
+      return promise;
+    }
+
     fetchUsers()
       .then((res) => (res.status === 200 ? res.json() : undefined))
       .then((json) => {
         if (json) {
-          setCharacters(json['users_list']);
+          console.log('Users fetched successfully');
         } else {
-          setCharacters(null);
+          console.log('Failed to fetch users');
         }
       })
       .catch((error) => {
@@ -128,29 +148,11 @@ function MyApp() {
       });
   }, [token]);
 
-  function fetchUsers() {
-    const promise = fetch(`${API_PREFIX}/users`, {
-      headers: addAuthHeader(),
-    });
-
-    return promise;
-  }
-
-  function addAuthHeader(otherHeaders = {}) {
-    if (token === INVALID_TOKEN) {
-      return otherHeaders;
-    } else {
-      return {
-        ...otherHeaders,
-        Authorization: `Bearer ${token}`,
-      };
-    }
-  }
-
   return (
     <Router>
+      <Page_Header />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<FrontPage />} />
         <Route path="/login" element={<Login handleSubmit={loginUser} />} />
         <Route
           path="/signup"
@@ -172,6 +174,7 @@ function MyApp() {
             </ProtectedRoute>
           }
         />
+        <Route path="/create-post" element={<CreatePost />} />
         <Route path="*" element={<div>Not found</div>} />
       </Routes>
     </Router>

@@ -1,12 +1,16 @@
 import './db-connection.js';
 import Post from '../schema/post.js';
 
-function getPostsNoSearchTerms(author = undefined, date = undefined) {
+function getPostsNoSearchTerms(author = undefined, date = undefined, authorId) {
   const query = {};
 
   if (author) {
     // your schema stores `author` as a string username; normalize to lowercase for consistency
     query.author = String(author).toLowerCase();
+  }
+
+  if (authorId) {
+    query.authorId = authorId;
   }
 
   if (date) {
@@ -17,7 +21,12 @@ function getPostsNoSearchTerms(author = undefined, date = undefined) {
   return Post.find(query).sort({ publishedAt: -1 }).lean();
 }
 
-function getPosts(author = undefined, date = undefined, search_terms = []) {
+function getPosts(
+  author = undefined,
+  date = undefined,
+  search_terms = [],
+  authorId
+) {
   // Function Notes: Author and Date are bundled here to prevent code reusage during search of author, date, and terms.
   let promise;
 
@@ -39,6 +48,10 @@ function getPosts(author = undefined, date = undefined, search_terms = []) {
   if (author != undefined) {
     queryConditions.author = author;
   }
+  // Adds authorId to the query conditions
+  if (authorId != undefined) {
+    queryConditions.authorId = authorId;
+  }
   // Adds date to the query conditions
   if (date != undefined) {
     queryConditions.publishedAt = date;
@@ -58,6 +71,11 @@ function createPost({
   return Post.create({ authorId, author, title, body, visibility });
 }
 
+// addPost mirrors createPost so routes can call either name
+function addPost(postData) {
+  return Post.create(postData);
+}
+
 function deletePostById(postId) {
   return Post.findByIdAndDelete(postId);
 }
@@ -70,10 +88,21 @@ function pullCommentFromPost(postId, commentId) {
   ).lean();
 }
 
+function findPostById(id) {
+  return Post.findById(id).lean();
+}
+
+function findPostByIdForUpdate(id) {
+  return Post.findById(id); // Returns Mongoose document (not lean) for updates
+}
+
 export default {
   getPosts,
   getPostsNoSearchTerms,
   createPost,
   deletePostById,
   pullCommentFromPost,
+  findPostById,
+  findPostByIdForUpdate,
+  addPost,
 };
