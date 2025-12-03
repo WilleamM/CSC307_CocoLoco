@@ -24,6 +24,8 @@ const PostSchema = new mongoose.Schema(
     // Post Content
     title: { type: String, trim: true, maxlength: 140 },
     body: { type: String, required: true, trim: true, maxlength: 5000 },
+    image: { type: Buffer },
+    imageContentType: { type: String },
     //media: { type: [MediaSchema], default: [] },
 
     // visibility
