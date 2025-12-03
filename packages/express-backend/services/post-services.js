@@ -58,6 +58,11 @@ function createPost({
   return Post.create({ authorId, author, title, body, visibility });
 }
 
+// addPost mirrors createPost so routes can call either name
+function addPost(postData) {
+  return Post.create(postData);
+}
+
 function deletePostById(postId) {
   return Post.findByIdAndDelete(postId);
 }
@@ -86,4 +91,5 @@ export default {
   pullCommentFromPost,
   findPostById,
   findPostByIdForUpdate,
+  addPost,
 };

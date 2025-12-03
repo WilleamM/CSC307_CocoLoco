@@ -5,6 +5,7 @@ import Login from './Pages/Login.jsx';
 import SignUp from './Pages/SignUp.jsx';
 import Page_Header from './Headers/Page_Header.jsx';
 import FrontPage from './Pages/Front_Page.jsx';
+import CreatePost from './Pages/Create_Post.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
 const API_PREFIX =
@@ -119,6 +120,7 @@ function MyApp() {
           path="/signup"
           element={<SignUp handleSubmit={signupUser} buttonLabel="Sign Up" />}
         />
+        <Route path="/create-post" element={<CreatePost />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
         <Route path="*" element={<div>Not found</div>} />
       </Routes>
