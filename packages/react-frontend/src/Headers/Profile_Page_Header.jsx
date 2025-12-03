@@ -1,12 +1,11 @@
 // this will be the header for the profile page
 
-import React from 'react';
+
 import './Profile_Page_Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faHouse,
   faUserGroup,
-  faUsers,
   faArrowUp,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';

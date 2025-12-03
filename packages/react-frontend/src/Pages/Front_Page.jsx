@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faComment,
-  faShare,
   faThumbsUp,
 } from '@fortawesome/free-solid-svg-icons';
 import './front_page.css';
