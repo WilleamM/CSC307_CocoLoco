@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "concurrently -k -n server,client -c auto \"npm:server\" \"npm:client\"",
     "server": "cd packages/express-backend && npx nodemon backend.js",
