@@ -11,16 +11,27 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 function Profile_Page_Header() {
-  const navigate = useNavigate(); //initializes the navigate function
+  const location = useLocation(); //gets the current path
+  const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false); //will be for the control of dropdown visibility
 
+  if (location.pathname === '/login') {
+    return null; // will return null once it goes to login page so the header won't render
+  }
   const goToHome = () => {
-    navigate('/'); //this will go to the front page
+    navigate('/'); //this will take the user home once clicked
   };
   const goToFriendsOnly = () => {
-    navigate('/friends-only'); //this will take the user to the friends only once clicked
+    navigate('/friends-only'); // this will take the user to the friends only page
   };
   const goToMakePost = () => {
-    navigate('/create-post'); //this will go to making a new post page when the upload clicked
+    navigate('/create-post');
+  };
+  const goToSignInPage = () => {
+    navigate('/login'); //this will take the user to login page once they click to sign out
+  };
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen); // this will toggle the dropdown menu visibility
   };
 
   return (
@@ -52,7 +63,21 @@ function Profile_Page_Header() {
             <span className="upload-text">Upload</span>
           </button>
         </div>
+        <div className="profile-icon" onClick={toggleDropdown}>
+          {/* will toggle the dropdown menu to true once clicked */}
+          {/* will add a click on button so that it can go to the profile page */}
+          <img src="/profile.png" alt="profile" className="profile-picture" />
+          {dropdownOpen && (
+            <div className="dropdown-menu">
+              <ul>
+                <li>
+                  <button onClick={goToSignInPage}>Sign Out</button>
+                </li>
+              </ul>
+            </div>
+          )}
       </div>
+    </div>
     </header>
   );
 }

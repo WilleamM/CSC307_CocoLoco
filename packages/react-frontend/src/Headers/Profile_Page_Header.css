@@ -89,3 +89,57 @@
 .upload-text {
   color: white;
 }
+
+.profile-icon {
+  position: relative;
+}
+
+.profile-icon img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 50px; /* Adjust this value based on your design */
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+}
+
+.dropdown-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-menu li {
+  padding: 8px 16px;
+  text-align: left;
+}
+
+.dropdown-menu li button {
+  background: none;
+  border: none;
+  color: #333;
+  text-align: left;
+  width: 100%;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-menu li button:hover {
+  background-color: #f4f4f4;
+}
+

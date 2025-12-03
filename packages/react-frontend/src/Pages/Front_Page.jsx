@@ -1,6 +1,5 @@
 import  { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faComment,
@@ -9,7 +8,6 @@ import {
 import './front_page.css';
 
 const FrontPage = () => {
-  const { userId } = useParams();
   const [posts, setPosts] = useState([]);
   const [suggestedUsers, setSuggestedUsers] = useState([]); // store suggested users
   const hasMorePostsRef = useRef(true); // tracks if there are more posts to load
@@ -51,19 +49,17 @@ const FrontPage = () => {
     const fetchSuggestedUsers = async () => {
       try {
         const response = await axios.get(
-          'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/suggested-users',
-          {
-            params: { userId },
-          }
+          'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/suggested-users'
         );
-        setSuggestedUsers(response.data.suggestedUsers);
+        setSuggestedUsers(response.data.suggestedUsers || []);
       } catch (error) {
         console.error('Error fetching suggested users:', error);
+        setSuggestedUsers([]);
       }
     };
 
     fetchSuggestedUsers();
-  }, [userId]); // Fetch suggested users when `userId` changes
+  }, []); // Fetch suggested users once on mount
 
   return (
     <div className="front-page">

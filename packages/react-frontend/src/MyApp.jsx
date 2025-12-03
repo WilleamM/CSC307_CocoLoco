@@ -6,6 +6,7 @@ import SignUp from './Pages/SignUp.jsx';
 import Page_Header from './Headers/Page_Header.jsx';
 import FrontPage from './Pages/Front_Page.jsx';
 import CreatePost from './Pages/Create_Post.jsx';
+import Profile_Page_Header from './Headers/Profile_Page_Header.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
 const API_PREFIX =
