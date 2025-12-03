@@ -7,6 +7,8 @@ const ProfilePage = () => {
   const { userId } = useParams();
   const [userData, setUserData] = useState(null);
   const [userPost, setUserPost] = useState(null);
+  const placeholderImage =
+    'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
   // will fetch user data from the backend
   useEffect(() => {
@@ -59,13 +61,12 @@ const ProfilePage = () => {
             src={
               userData.avatarUrl
                 ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${userData.avatarUrl}?t=${userData.updatedAt || Date.now()}`
-                : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
+                : placeholderImage
             }
             alt="Profile"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src =
-                'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+              e.target.src = placeholderImage;
             }}
           />
           {/* Simple file input for uploading avatar */}
@@ -131,22 +132,18 @@ const ProfilePage = () => {
             if (userPost && userPost.length > 0) {
               return userPost.map((post) => (
                 <div key={post._id} className="post-item">
-                  {post.image ? (
-                    <img
-                      src={`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${post._id}/image`}
-                      alt="post"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src =
-                          'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
-                      alt="post placeholder"
-                    />
-                  )}
+                  <img
+                    src={
+                      post.image
+                        ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${post._id}/image`
+                        : placeholderImage
+                    }
+                    alt="post"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = placeholderImage;
+                    }}
+                  />
                 </div>
               ));
             } else {

@@ -85,7 +85,9 @@ app.get('/posts/:id/image', (req, res) => {
       }
 
       if (!post.image || !post.imageContentType) {
-        return res.status(404).send('Image not found');
+        return res.redirect(
+          'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
+        );
       }
 
       res.set('Content-Type', post.imageContentType);

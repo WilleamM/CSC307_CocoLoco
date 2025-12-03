@@ -11,6 +11,8 @@ const FrontPage = () => {
   const [suggestedUsers, setSuggestedUsers] = useState([]); // store suggested users
   const hasMorePostsRef = useRef(true); // tracks if there are more posts to load
   const loadingRef = useRef(false); // tracks if data is being fetched
+  const placeholderImage =
+    'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
   const fetchPosts = async () => {
     if (loadingRef.current || !hasMorePostsRef.current) return; // prevents if already loading or no more posts
@@ -74,13 +76,12 @@ const FrontPage = () => {
                   src={
                     user.avatarUrl
                       ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${user.avatarUrl}`
-                      : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
+                      : placeholderImage
                   }
                   alt="profile"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src =
-                      'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+                    e.target.src = placeholderImage;
                   }}
                 />
               </div>
@@ -115,8 +116,7 @@ const FrontPage = () => {
                   alt="post"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src =
-                      'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+                    e.target.src = placeholderImage;
                   }}
                 />
               </div>
