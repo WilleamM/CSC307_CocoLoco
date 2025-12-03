@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  Navigate,
+} from 'react-router-dom';
 import ProfilePage from './Pages/Profile_Page.jsx';
 import Login from './Pages/Login.jsx';
 import SignUp from './Pages/SignUp.jsx';
+import User_page from './Pages/User_page.jsx';
 const INVALID_TOKEN = 'INVALID_TOKEN';
 
 //This is needed for the fetch to work correctly it connects to the DB
-const API_PREFIX =
-  'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net';
+const API_PREFIX = 'http://localhost:8000'; //"https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net";
 
 //Home page
 function Home() {
@@ -23,12 +29,11 @@ function Home() {
 
 //Used to login the user into their profile page
 function ProtectedRoute({ token, children }) {
-  if(token === 'INVALID_TOKEN'){
-    return <Navigate to="/login" replace/>;
+  if (token === 'INVALID_TOKEN') {
+    return <Navigate to="/login" replace />;
   }
 
   return children;
-
 }
 
 // <Table characterData={characters}/> where characters is being passed to table as a prop
@@ -40,11 +45,10 @@ function MyApp() {
   //This is going to be used to keep the user logged in
   useEffect(() => {
     const savedToken = localStorage.getItem('authToken');
-    if(savedToken){
+    if (savedToken) {
       setToken(savedToken);
     }
   }, []);
-
 
   function loginUser(creds) {
     const promise = fetch(`${API_PREFIX}/login`, {
@@ -57,23 +61,25 @@ function MyApp() {
       .then((response) => {
         if (response.status === 200) {
           response.json().then((payload) => {
-          setToken(payload.token);
-          localStorage.setItem("authToken", payload.token); //Used to store the authentication token in local storage
-          setMessage(`Login successful; auth token saved`);
-        });
-        }else {
+            setToken(payload.token);
+            localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
+            setMessage(`Login successful; auth token saved`);
+          });
+        } else {
           setMessage(`Login Error ${response.status}: ${response.data}`);
+          throw new Error('Login failed\n');
         }
       })
       .catch((error) => {
         setMessage(`Login Error: ${error}`);
+        throw error;
       });
 
     return promise;
   }
 
   //This is going to be used to logout the user
-  function logoutUser(){
+  function logoutUser() {
     setToken(INVALID_TOKEN);
     localStorage.removeItem('authToken');
   }
@@ -88,14 +94,15 @@ function MyApp() {
     })
       .then((response) => {
         if (response.status === 201) {
-          response.json().then((payload) => {
-          setToken(payload.token);
-          localStorage.setItem("authToken", payload.token); //Used to store the authentication token in local storage
-          setMessage(
-            `Signup successful for user: ${creds.username}; auth token saved`
-          );
-        });
-        }else {
+          return response.json().then((payload) => {
+            setToken(payload.token);
+            localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
+            setMessage(
+              `Signup successful for user: ${creds.username}; auth token saved`
+            );
+            return payload;
+          });
+        } else {
           setMessage(`Signup Error ${response.status}: ${response.data}`);
         }
       })
@@ -149,11 +156,21 @@ function MyApp() {
           path="/signup"
           element={<SignUp handleSubmit={signupUser} buttonLabel="Sign Up" />}
         />
-        <Route path="/profile/:userId" element={
-          <ProtectedRoute token={token}>
-             <ProfilePage />
-          </ProtectedRoute>
-            } 
+        <Route
+          path="/profile/:userId"
+          element={
+            <ProtectedRoute token={token}>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/:userId"
+          element={
+            <ProtectedRoute token={token}>
+              <User_page />
+            </ProtectedRoute>
+          }
         />
         <Route path="*" element={<div>Not found</div>} />
       </Routes>

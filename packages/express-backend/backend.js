@@ -2,17 +2,17 @@ import express from 'express';
 import cors from 'cors';
 import userServices from './services/user-services.js';
 import postServices from './services/post-services.js';
-import './services/auth.js';
+import { registerUser, loginUser, authenticateUser } from './services/auth.js';
 
 // npx nodemon backend.js
 const app = express();
-const port = Number(process.env.PORT) || 8000;
+const port = 8000; //Number(process.env.PORT) || 8000;
 app.use(cors());
 app.use(express.json());
 
 // health check
 app.get('/', (req, res) => {
-  return res.send('Hello World!');
+  return res.send('Hello World v2!');
 });
 
 // NOTE: For endpoint creation show:
@@ -57,6 +57,10 @@ app.get('/users/', (req, res) => {
       res.status(500).send('Failed to fetch users');
     });
 });
+
+app.post('/login', loginUser);
+
+app.post('/signup', registerUser);
 
 // GET /users/:id
 // Example: GET http://localhost:8000/users/671eb54c8ddad1d8cf7a0012

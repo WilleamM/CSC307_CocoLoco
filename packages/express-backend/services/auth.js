@@ -1,40 +1,60 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import 'dotenv/config';
+import userServices from './user-services.js';
+
+const creds = [];
 
 // registerUser: For creating a new user
 export function registerUser(req, res) {
-  const { username, password } = req.body; // from form
+  const { userName, password } = req.body; // from form
 
-  if (!username || !password) {
+  let error;
+
+  if (!userName || !password) {
     error = new Error('Bad request: Invalid input data.');
     error.statusCode = 400;
     throw error;
-  } else if (creds.find((c) => c.username === username)) {
+  } else if (creds.find((c) => c.userName === userName)) {
     error = new Error('Username already taken.');
     error.statusCode = 409;
     throw error;
   } else {
-    promise = bcrypt
+    const promise = bcrypt
       .genSalt(10)
       .then((salt) => bcrypt.hash(password, salt))
       .then((hashedPassword) => {
-        generateAccessToken(username).then((token) => {
+        return generateAccessToken(userName).then((token) => {
           console.log('Token:', token);
-          {
-            (hashedPassword, token);
-          }
+          //Used to save the user and send a response
+          return userServices
+            .addUser({
+              userName,
+              displayName: userName,
+              password: hashedPassword,
+            })
+            .then((newUser) => {
+              res.status(201).send({ token: token, userId: newUser._id });
+            });
         });
       });
+
+    promise.catch((error) => {
+      console.error('error registering user', error);
+      if (!res.headersSent) {
+        res.status(500).send('Code error');
+      }
+    });
 
     return promise;
   }
 }
 
 // Helper function to generate an access token (a client uses this to show it's signed in):
-function generateAccessToken(username) {
+function generateAccessToken(userName) {
   return new Promise((resolve, reject) => {
     jwt.sign(
-      { username: username },
+      { userName: userName },
       process.env.TOKEN_SECRET,
       { expiresIn: '1d' },
       (error, token) => {
@@ -77,18 +97,18 @@ export function authenticateUser(req, res, next) {
 // updated from: *empty line*
 // to: app.post("/login", loginUser);
 export function loginUser(req, res) {
-  const { username, pwd } = req.body; // from form
-  const retrievedUser = creds.find((c) => c.username === username);
+  const { userName, password } = req.body; // from form
+  const retrievedUser = creds.find((c) => c.userName === userName);
 
   if (!retrievedUser) {
     // invalid username
     res.status(401).send('Unauthorized');
   } else {
     bcrypt
-      .compare(pwd, retrievedUser.hashedPassword)
+      .compare(password, retrievedUser.hashedPassword)
       .then((matched) => {
         if (matched) {
-          generateAccessToken(username).then((token) => {
+          generateAccessToken(userName).then((token) => {
             res.status(200).send({ token: token });
           });
         } else {

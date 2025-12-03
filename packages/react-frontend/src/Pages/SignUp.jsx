@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  useNavigate,
+} from 'react-router-dom';
 import axios from 'axios'; // fetches data from an API
 import './SignUp.css';
 
 function SignUp(props) {
+  const navigate = useNavigate();
   const [creds, setCreds] = useState({
     userName: '',
     displayName: '',
@@ -29,10 +36,10 @@ function SignUp(props) {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      await props.handleSubmit(creds);
+      const payload = await props.handleSubmit(creds);
       setMsg('User successfully Created!');
       // Handle successful registration (e.g., redirect, show success message)
-
+      navigate(`/user/${payload.userId}`);
     } catch (error) {
       console.error('Error registering user:', error);
       setMsg(error.response?.data || 'Error Creating User');
@@ -70,10 +77,7 @@ function SignUp(props) {
             value={creds.password}
             onChange={handleChange}
           />
-          <input
-            type="submit"
-            value={props.buttonLabel || 'Sign Up'}
-          />
+          <input type="submit" value={props.buttonLabel || 'Sign Up'} />
         </form>
         {msg && <p>{msg}</p>}
         <p>

@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  useNavigate,
+} from 'react-router-dom';
 import axios from 'axios'; // fetches data from an API
 import './Login.css';
 
 function Login(props) {
+  const navigate = useNavigate();
   const [creds, setCreds] = useState({
     userName: '',
     password: '',
@@ -25,10 +32,11 @@ function Login(props) {
 
   const submitForm = async (event) => {
     event.preventDefault();
-    try{
+    try {
       await props.handleSubmit(creds);
-      setMsg("User successfully logged in!\n");
-    }catch(error){
+      setMsg('User successfully logged in!\n');
+      navigate(`/user/${creds._id}`);
+    } catch (error) {
       console.error('Error logging user:', error);
       setMsg(error.response?.data || 'Error logging User');
       console.log(
@@ -38,7 +46,7 @@ function Login(props) {
         error.response?.data
       );
     }
-  }
+  };
 
   return (
     <div className="login">
@@ -63,10 +71,7 @@ function Login(props) {
             onChange={handleChange}
             placeholder="Password"
           />
-          <input
-            type="submit"
-            value={props.buttonLabel || 'Login'}
-          />
+          <input type="submit" value={props.buttonLabel || 'Login'} />
         </form>
         <p>
           Don't have an account? <Link to="/signup">Sign up here</Link>
@@ -74,7 +79,6 @@ function Login(props) {
       </div>
     </div>
   );
-
 }
 
 export default Login;
