@@ -140,8 +140,26 @@ app.post('/users/:id/avatar', upload.single('avatar'), (req, res) => {
     return res.status(400).send('No file uploaded.');
   }
 
+  // Validate file type
+  const allowedMimeTypes = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+  ];
+  if (!allowedMimeTypes.includes(req.file.mimetype)) {
+    return res.status(400).send('Invalid file type. Only images are allowed.');
+  }
+
+  // Validate file size (5MB limit)
+  const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+  if (req.file.size > maxSize) {
+    return res.status(400).send('File too large. Maximum size is 5MB.');
+  }
+
   userServices
-    .findUserById(id)
+    .findUserByIdForUpdate(id)
     .then((user) => {
       if (!user) {
         return res.status(404).send('User not found');
@@ -173,8 +191,12 @@ app.get('/users/:id/avatar', (req, res) => {
   userServices
     .findUserById(id)
     .then((user) => {
-      if (!user || !user.avatar) {
-        // Redirect to default avatar or send 404
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+
+      if (!user.avatar || !user.avatarContentType) {
+        // Redirect to default avatar if no avatar is set
         return res.redirect(
           'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
         );

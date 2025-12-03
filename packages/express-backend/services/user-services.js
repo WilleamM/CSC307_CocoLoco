@@ -9,6 +9,10 @@ function findUserById(id) {
   return User.findById(id).lean();
 }
 
+function findUserByIdForUpdate(id) {
+  return User.findById(id); // Returns Mongoose document (not lean) for updates
+}
+
 function addUser(new_user) {
   return User.create(new_user);
 }
@@ -43,6 +47,7 @@ export default {
   addUser,
   getAllUsers,
   findUserById,
+  findUserByIdForUpdate,
   deleteUserById,
   updateUser,
   getSuggestedUsers,

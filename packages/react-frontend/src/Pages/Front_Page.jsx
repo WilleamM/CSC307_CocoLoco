@@ -72,10 +72,16 @@ const FrontPage = () => {
               <div className="profile-image">
                 <img
                   src={
-                    user.avatarUrl ||
-                    'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
+                    user.avatarUrl
+                      ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${user.avatarUrl}`
+                      : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
                   }
                   alt="profile"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+                  }}
                 />
               </div>
               <div className="display-name">{user.displayName}</div>
