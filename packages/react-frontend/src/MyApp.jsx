@@ -206,7 +206,7 @@ function MyApp() {
           }
         />
         <Route
-          path="/friends"
+          path="/follow"
           element={
             <ProtectedRoute token={token}>
               <FriendsPage userId={user?.id} />

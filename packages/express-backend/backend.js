@@ -377,6 +377,37 @@ app.post('/users/:id/avatar', upload.single('avatar'), (req, res) => {
     });
 });
 
+// POST /users/:id/follow - toggle follow for current user
+app.post('/users/:id/follow', authenticateUser, (req, res) => {
+  const targetId = req.params.id;
+  let actingUserId;
+
+  userServices
+    .findUserByUserName(req.user.userName)
+    .then((actingUser) => {
+      if (!actingUser) {
+        res.status(401).send('Unauthorized');
+        return null;
+      }
+      actingUserId = actingUser._id;
+      return userServices.toggleFollow(actingUserId, targetId);
+    })
+    .then((result) => {
+      if (!result) {
+        return res.status(404).send('User not found');
+      }
+      res.send({
+        following: result.following,
+        followers: result.followers,
+        followingCount: result.followingCount,
+      });
+    })
+    .catch((err) => {
+      console.error('Error toggling follow', err);
+      res.status(500).send('Failed to toggle follow');
+    });
+});
+
 // PUT /users/:id/profile
 // Updates displayName, bio, and/or avatar for a user
 app.put(

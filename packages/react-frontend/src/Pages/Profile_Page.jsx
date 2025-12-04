@@ -9,8 +9,11 @@ const ProfilePage = ({ refreshTrigger }) => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [userPost, setUserPost] = useState(null);
+  const [isFollowing, setIsFollowing] = useState(false);
   const placeholderImage =
     'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+  const currentUserId = localStorage.getItem('userId');
+  const token = localStorage.getItem('authToken');
 
   // will fetch user data from the backend
   useEffect(() => {
@@ -43,6 +46,40 @@ const ProfilePage = ({ refreshTrigger }) => {
     }; // will check if the user exists before fetching for posts
     fetchUserPost();
   }, [userId, userData]);
+
+  useEffect(() => {
+    if (!currentUserId || currentUserId === userId) {
+      setIsFollowing(false);
+      return;
+    }
+    axios
+      .get(`${API_BASE_URL}/users/${currentUserId}`)
+      .then((response) => {
+        const me = response.data;
+        const followingIds = me.friendIds || me.following || [];
+        const follows = Array.isArray(followingIds)
+          ? followingIds.some((id) => String(id) === String(userId))
+          : false;
+        setIsFollowing(follows);
+      })
+      .catch(() => setIsFollowing(false));
+  }, [currentUserId, userId, refreshTrigger]);
+
+  const handleToggleFollow = () => {
+    if (!token || !currentUserId) return;
+    axios
+      .post(
+        `${API_BASE_URL}/users/${userId}/follow`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then((res) => {
+        setIsFollowing(res.data.following);
+      })
+      .catch((err) => {
+        console.error('Error toggling follow', err);
+      });
+  };
 
   if (!userData) {
     //if there's no user found then it will just put a Loading on their screen
@@ -87,7 +124,11 @@ const ProfilePage = ({ refreshTrigger }) => {
             <p className="username">{userData.userName}</p>
             <p className="bio">{userData.bio || ''}</p>
           </div>
-          <button className="follow-button">Follow</button>
+          {currentUserId !== userId && (
+            <button className="follow-button" onClick={handleToggleFollow}>
+              {isFollowing ? 'Unfollow' : 'Follow'}
+            </button>
+          )}
         </div>
       </div>
       <div className="profile-tabs">

@@ -48,6 +48,50 @@ function getSuggestedUsers(userId) {
     });
 }
 
+function toggleFollow(userId, targetUserId) {
+  if (String(userId) === String(targetUserId)) {
+    return Promise.resolve({ updated: null, following: false });
+  }
+
+  let actingUser;
+  let targetUser;
+
+  return User.findById(userId)
+    .then((user) => {
+      actingUser = user;
+      return User.findById(targetUserId);
+    })
+    .then((target) => {
+      targetUser = target;
+      if (!actingUser || !targetUser) {
+        return null;
+      }
+
+      const isFollowing = (actingUser.friendIds || []).some(
+        (id) => String(id) === String(targetUserId)
+      );
+
+      if (isFollowing) {
+        actingUser.friendIds = (actingUser.friendIds || []).filter(
+          (id) => String(id) !== String(targetUserId)
+        );
+        actingUser.following = Math.max((actingUser.following || 0) - 1, 0);
+        targetUser.followers = Math.max((targetUser.followers || 0) - 1, 0);
+      } else {
+        actingUser.friendIds = [...(actingUser.friendIds || []), targetUserId];
+        actingUser.following = (actingUser.following || 0) + 1;
+        targetUser.followers = (targetUser.followers || 0) + 1;
+      }
+
+      return Promise.all([actingUser.save(), targetUser.save()]).then(() => ({
+        updated: actingUser,
+        following: !isFollowing,
+        followers: targetUser.followers,
+        followingCount: actingUser.following,
+      }));
+    });
+}
+
 export default {
   addUser,
   getAllUsers,
@@ -57,4 +101,5 @@ export default {
   updateUser,
   getSuggestedUsers,
   findUserByUserName,
+  toggleFollow,
 };

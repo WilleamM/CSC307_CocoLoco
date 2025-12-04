@@ -34,7 +34,7 @@ function Page_Header({ user, onLogout, onProfileUpdated, refreshTrigger }) {
     navigate('/'); //this will take the user home once clicked
   };
   const goToFriendsOnly = () => {
-    navigate('/friends'); // this will take the user to the friends only page
+    navigate('/follow'); // this will take the user to the follow page
   };
   const goToMakePost = () => {
     navigate('/create-post');
