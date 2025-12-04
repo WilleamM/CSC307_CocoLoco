@@ -14,6 +14,7 @@ const INVALID_TOKEN = 'INVALID_TOKEN';
 import Page_Header from './Headers/Page_Header.jsx';
 import FrontPage from './Pages/Front_Page.jsx';
 import CreatePost from './Pages/Create_Post.jsx';
+import FriendsPage from './Pages/Friends_page.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
 const API_PREFIX =
@@ -44,11 +45,17 @@ function ProtectedRoute({ token, children }) {
 function MyApp() {
   const [token, setToken] = useState(INVALID_TOKEN);
   const [message, setMessage] = useState('');
-  //This is going to be used to keep the user logged in
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     const savedToken = localStorage.getItem('authToken');
-    if (savedToken) {
+    const savedUserId = localStorage.getItem('userId');
+
+    if(savedToken){
       setToken(savedToken);
+    }
+    if(savedUserId){
+      setUser({ id: savedUserId});
     }
   }, []);
 
@@ -64,7 +71,9 @@ function MyApp() {
         if (response.status === 200) {
           return response.json().then((payload) => {
             setToken(payload.token);
+            setUser({ id: payload.userId, userName: payload.userName});
             localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
+            localStorage.setItem('userId', payload.userId);
             setMessage(`Login successful; auth token saved`);
             return payload;
           });
@@ -99,7 +108,9 @@ function MyApp() {
         if (response.status === 201) {
           return response.json().then((payload) => {
             setToken(payload.token);
+            setUser({ id: payload.userId, userName: payload.userName});
             localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
+            localStorage.setItem('userId', payload.userId);
             setMessage(
               `Signup successful for user: ${creds.username}; auth token saved`
             );
@@ -173,6 +184,14 @@ function MyApp() {
           element={
             <ProtectedRoute token={token}>
               <User_page />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/friends"
+          element={
+            <ProtectedRoute token={token}>
+              <FriendsPage userId={user?.id}/>
             </ProtectedRoute>
           }
         />

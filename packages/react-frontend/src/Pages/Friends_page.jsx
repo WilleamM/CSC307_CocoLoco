@@ -5,10 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import './Front_Page.css';
 
-const FriendsPage = () => {
-  const { userId } = useParams();
+const FriendsPage = ({userId}) => {
   const [posts, setPosts] = useState([]);
-  const [suggestedUsers, setSuggestedUsers] = useState([]); // store suggested users
   const hasMorePostsRef = useRef(true); // tracks if there are more posts to load
   const loadingRef = useRef(false); // tracks if data is being fetched
   const placeholderImage =
@@ -43,55 +41,8 @@ const FriendsPage = () => {
     fetchPosts();
   }, []);
 
-  // Fetch suggested users
-  useEffect(() => {
-    const fetchSuggestedUsers = async () => {
-      try {
-        const response = await axios.get(
-          'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/suggested-users',
-          {
-            params: { userId },
-          }
-        );
-        setSuggestedUsers(response.data.suggestedUsers);
-      } catch (error) {
-        console.error('Error fetching suggested users:', error);
-      }
-    };
-
-    fetchSuggestedUsers();
-  }, [userId]); // Fetch suggested users when `userId` changes
-
   return (
     <div className="front-page">
-      {/* Left Column: Suggested Users */}
-      <div className="left-column">
-        <span className="left-text">Suggested For You</span>
-        <div>
-          {suggestedUsers.length === 0 && <div>Loading suggested users...</div>}
-          {suggestedUsers.map((user, index) => (
-            <div key={index} className="profile-info">
-              <div className="profile-image">
-                <img
-                  src={
-                    user.avatarUrl
-                      ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${user.avatarUrl}`
-                      : placeholderImage
-                  }
-                  alt="profile"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = placeholderImage;
-                  }}
-                />
-              </div>
-              <div className="display-name">{user.displayName}</div>
-              <button>Add</button>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Middle Column: Posts from the user */}
       <div className="middle-column">
         {posts.length === 0 && <div>Loading posts...</div>}
