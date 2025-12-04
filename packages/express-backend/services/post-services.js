@@ -1,11 +1,22 @@
 import './db-connection.js';
 import Post from '../schema/post.js';
 
-function getPostsNoSearchTerms(author = undefined, date = undefined, authorId) {
+function dayRange(dateString) {
+  const parsed = new Date(dateString);
+  if (Number.isNaN(parsed.getTime())) return undefined;
+
+  const start = new Date(parsed);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(parsed);
+  end.setHours(23, 59, 59, 999);
+
+  return { $gte: start, $lte: end };
+}
+
+function buildBaseQuery(author, date, authorId) {
   const query = {};
 
   if (author) {
-    // your schema stores `author` as a string username; normalize to lowercase for consistency
     query.author = String(author).toLowerCase();
   }
 
@@ -14,10 +25,14 @@ function getPostsNoSearchTerms(author = undefined, date = undefined, authorId) {
   }
 
   if (date) {
-    const range = dayRange(date);
-    if (range) query.publishedAt = range;
+    query.publishedAt = dayRange(date) ?? date;
   }
 
+  return query;
+}
+
+function getPostsNoSearchTerms(author = undefined, date = undefined, authorId) {
+  const query = buildBaseQuery(author, date, authorId);
   return Post.find(query).sort({ publishedAt: -1 }).lean();
 }
 
@@ -27,38 +42,23 @@ function getPosts(
   search_terms = [],
   authorId
 ) {
-  // Function Notes: Author and Date are bundled here to prevent code reusage during search of author, date, and terms.
-  let promise;
+  const queryConditions = buildBaseQuery(author, date, authorId);
 
   if (typeof search_terms === 'string') {
     search_terms = [search_terms];
   }
 
-  // $regex : Query operator for a single term
-  // 'i' : Makes the query non-case-sensitive
-  const searchTermConditions = search_terms.map((term) => ({
-    body: { $regex: term, $options: 'i' },
-  }));
+  const searchTermConditions = (Array.isArray(search_terms) ? search_terms : [])
+    .filter((term) => term && String(term).trim().length > 0)
+    .map((term) => ({
+      body: { $regex: term, $options: 'i' },
+    }));
 
-  // $and : Query operator for many conditions (inclusive, aka. all must be fulfilled)
-  // $or : Not used ; Query operator for many conditions (non-inclusive)
-  let queryConditions = { $and: searchTermConditions };
-
-  // Adds author to the query conditions
-  if (author != undefined) {
-    queryConditions.author = author;
-  }
-  // Adds authorId to the query conditions
-  if (authorId != undefined) {
-    queryConditions.authorId = authorId;
-  }
-  // Adds date to the query conditions
-  if (date != undefined) {
-    queryConditions.publishedAt = date;
+  if (searchTermConditions.length > 0) {
+    queryConditions.$and = searchTermConditions;
   }
 
-  promise = Post.find(queryConditions);
-  return promise;
+  return Post.find(queryConditions).sort({ publishedAt: -1 }).lean();
 }
 
 function createPost({
