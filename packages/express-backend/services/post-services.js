@@ -92,17 +92,16 @@ function findPostById(id) {
   return Post.findById(id).lean();
 }
 
-function getPostByFriendIds(authorIds = []){
-  if(!authorIds || authorIds.length === 0){
+function getPostByFriendIds(authorIds = []) {
+  if (!authorIds || authorIds.length === 0) {
     return Promise.resolve([]);
   }
 
   return Post.find({
-    authorId: { $in: authorIds}
+    authorId: { $in: authorIds },
   })
-  .sort({publishedAt: - 1})
-  .lean();
-
+    .sort({ publishedAt: -1 })
+    .lean();
 }
 
 function findPostByIdForUpdate(id) {
