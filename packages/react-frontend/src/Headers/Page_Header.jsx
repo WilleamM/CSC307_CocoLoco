@@ -28,12 +28,8 @@ function Page_Header({ user, onLogout, onProfileUpdated, refreshTrigger }) {
   const [statusMsg, setStatusMsg] = useState('');
   const [avatarSrc, setAvatarSrc] = useState('/profile.png');
 
-  if (location.pathname === '/login') {
-    return null; // will return null once it goes to login page so the header won't render
-  }
-  if (location.pathname === '/signup') {
-    return null;
-  }
+  const hideHeader =
+    location.pathname === '/login' || location.pathname === '/signup';
   const goToHome = () => {
     navigate('/'); //this will take the user home once clicked
   };
@@ -150,6 +146,10 @@ function Page_Header({ user, onLogout, onProfileUpdated, refreshTrigger }) {
         setStatusMsg('Failed to update profile');
       });
   };
+
+  if (hideHeader) {
+    return null;
+  }
 
   return (
     <header className="front-page-header">

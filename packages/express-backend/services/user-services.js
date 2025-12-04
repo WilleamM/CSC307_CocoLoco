@@ -34,10 +34,11 @@ function getSuggestedUsers(userId) {
   return User.findById(userId)
     .then((user) => {
       if (!user) throw new Error('User not found');
+      const followingIds = Array.isArray(user.following) ? user.following : [];
 
       return User.aggregate([
         { $match: { _id: { $ne: userId } } }, // excludes the logged-in user
-        { $match: { _id: { $nin: user.following } } }, // excludes followed users
+        { $match: { _id: { $nin: followingIds } } }, // excludes followed users
         { $sample: { size: 3 } }, // randomly gets 3 users
         { $project: { userName: 1, displayName: 1, avatarUrl: 1 } }, // only the fields needed
       ]);
