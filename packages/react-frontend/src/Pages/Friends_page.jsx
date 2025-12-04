@@ -19,7 +19,15 @@ const FriendsPage = ({ userId }) => {
     loadingRef.current = true; // mark as loading
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/posts`);
+      const response = await axios.get(
+        //'http://localhost:8000/feed',
+        'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/feed',
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
+        }
+      );
 
       const newPosts = response.data.posts_list || [];
 

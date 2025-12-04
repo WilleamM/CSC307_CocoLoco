@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'; // fetches data from an API
 import './ProfilePage.css';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  Navigate,
+} from 'react-router-dom';
 import { API_BASE_URL } from '../apiConfig.js';
 
 const UserPage = () => {
@@ -15,7 +22,10 @@ const UserPage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/users/${userId}`);
+        const response = await axios.get(
+          //`http://localhost:8000/users/${userId}`
+          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
+        );
         setUserData(response.data);
       } catch (error) {
         console.error('Error fetching data user', error);
@@ -28,6 +38,11 @@ const UserPage = () => {
     //this will for the posts and will fetch from the database
     const fetchUserPost = async () => {
       try {
+        const response = await axios.get(
+          //`http://localhost:8000/posts/${userId}`,
+          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${userId}`,
+          { params: { author: userId } }
+        );
         const response = await axios.get(`${API_BASE_URL}/posts/${userId}`, {
           params: { author: userId },
         });
@@ -130,6 +145,11 @@ const UserPage = () => {
       </div>
       <div className="profile-tabs">
         <div className="tab active">Posts</div>
+      </div>
+      <div style={{ marginTop: '10px' }}>
+      <Link to="/friends">
+        <button className="follow-button">Go to Friends Feed</button>
+      </Link>
       </div>
       <div className="profile-posts">
         <div className="post-grid">

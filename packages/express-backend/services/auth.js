@@ -70,6 +70,7 @@ export function authenticateUser(req, res, next) {
   } else {
     jwt.verify(token, process.env.TOKEN_SECRET, (error, decoded) => {
       if (decoded) {
+        req.user = decoded;
         next();
       } else {
         console.log('JWT error:', error);

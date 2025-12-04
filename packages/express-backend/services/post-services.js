@@ -92,6 +92,19 @@ function findPostById(id) {
   return Post.findById(id).lean();
 }
 
+function getPostByFriendIds(authorIds = []){
+  if(!authorIds || authorIds.length === 0){
+    return Promise.resolve([]);
+  }
+
+  return Post.find({
+    authorId: { $in: authorIds}
+  })
+  .sort({publishedAt: - 1})
+  .lean();
+
+}
+
 function findPostByIdForUpdate(id) {
   return Post.findById(id); // Returns Mongoose document (not lean) for updates
 }
@@ -105,4 +118,5 @@ export default {
   findPostById,
   findPostByIdForUpdate,
   addPost,
+  getPostByFriendIds,
 };

@@ -174,6 +174,32 @@ app.get('/users/', (req, res) => {
 app.post('/login', loginUser);
 app.post('/signup', registerUser);
 
+app.get('/feed', authenticateUser, async (req, res) => {
+  try{
+      const userName = req.user.userName;
+      if(!userName){
+        return res.status(401).send('No user in the token');
+      }
+
+      const user = await userServices.findUserByUserName(userName);
+      if(!user){
+        return res.status(404).send('User not found');
+      }
+
+      const userId = user._id;
+      const friendIds = user.friendIds || [];
+
+      const authorsToShow = [userId, ...friendIds];
+      const posts = await postServices.getPostByFriendIds(authorsToShow);
+
+      res.send({posts_list: posts});
+
+  }catch(error){
+    console.error(error);
+    res.status(500).send('Failed to fetech');
+  }
+});
+
 app.put('/users/:id/bio', authenticateUser, (req, res) => {
   const userId = req.params.id;
   const { bio } = req.body;

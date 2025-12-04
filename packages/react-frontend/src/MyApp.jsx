@@ -17,8 +17,9 @@ import CreatePost from './Pages/Create_Post.jsx';
 import FriendsPage from './Pages/Friends_page.jsx';
 import { API_BASE_URL } from './apiConfig.js';
 
-// Base URL for API calls; defaults to local backend when VITE_API_BASE_URL is not set
-const API_PREFIX = API_BASE_URL;
+//This is needed for the fetch to work correctly it connects to the DB
+const API_PREFIX =
+  'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net'; //'http://localhost:8000';
 
 //Home page
 function Home() {
