@@ -1,17 +1,19 @@
 import  { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useNavigate } from 'react-router-dom';
 import {
   faComment,
   faThumbsUp,
 } from '@fortawesome/free-solid-svg-icons';
-import './front_page.css';
+import './Front_page.css';
 
 const FrontPage = () => {
   const [posts, setPosts] = useState([]);
   const [suggestedUsers, setSuggestedUsers] = useState([]); // store suggested users
   const hasMorePostsRef = useRef(true); // tracks if there are more posts to load
   const loadingRef = useRef(false); // tracks if data is being fetched
+  const navigate = useNavigate();
   const placeholderImage =
     'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
@@ -130,7 +132,7 @@ const FrontPage = () => {
                   </button>
                 </div>
                 <div className="comment">
-                  <button>
+                  <button onClick={() => navigate(`/users/${post.authorId}/posts/${post._id}/comments`)}>
                     <FontAwesomeIcon icon={faComment} />
                     <span>{post.comments.length} Comments</span>
                   </button>

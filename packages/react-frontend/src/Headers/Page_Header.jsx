@@ -21,6 +21,9 @@ function Page_Header() {
   if (location.pathname === '/login') {
     return null; // will return null once it goes to login page so the header won't render
   }
+  if (location.pathname === '/signup'){
+    return null;
+  }
   const goToHome = () => {
     navigate('/'); //this will take the user home once clicked
   };

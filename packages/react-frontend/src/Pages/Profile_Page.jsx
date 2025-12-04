@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios'; // fetches data from an API
 import './ProfilePage.css';
 
 const ProfilePage = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [userPost, setUserPost] = useState(null);
   const placeholderImage =
@@ -131,7 +132,7 @@ const ProfilePage = () => {
           {(() => {
             if (userPost && userPost.length > 0) {
               return userPost.map((post) => (
-                <div key={post._id} className="post-item">
+                <div key={post._id} onClick={() => navigate(`/users/${userId}/posts/${post._id}/comments`)} className="post-item">
                   <img
                     src={
                       post.image
