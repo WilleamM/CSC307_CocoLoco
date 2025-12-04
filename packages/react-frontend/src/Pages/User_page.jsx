@@ -7,14 +7,16 @@ const UserPage = () => {
   const { userId } = useParams();
   const [userData, setUserData] = useState(null);
   const [userPosts, setUserPost] = useState(null);
+  const [editingBio, setEditingBio] = useState(false);
+  const [bioDraft, setBioDraft] = useState('');
 
   // will fetch user data from the backend
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          //`http://localhost:8000/users/${userId}`
-          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
+          `http://localhost:8000/users/${userId}`
+          //`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
         );
         setUserData(response.data);
       } catch (error) {
@@ -29,8 +31,8 @@ const UserPage = () => {
     const fetchUserPost = async () => {
       try {
         const response = await axios.get(
-          //`http://localhost:8000/posts/${userId}`,
-          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${userId}`,
+          `http://localhost:8000/posts/${userId}`,
+          //`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${userId}`,
           { params: { author: userId } }
         );
         setUserPost(response.data);
@@ -45,6 +47,33 @@ const UserPage = () => {
     //if there's no user found then it will just put a Loading on their screen
     return <div>Loading...</div>;
   }
+
+  const handleStartEditBio = () => {
+  setBioDraft(userData.bio || '');
+  setEditingBio(true);
+};
+
+const handleSaveBio = async () => {
+  try {
+    const token = localStorage.getItem('authToken');
+
+    const res = await axios.put(
+      `http://localhost:8000/users/${userId}/bio`,
+      { bio: bioDraft },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Update local user data with new bio
+    setUserData((prev) => ({ ...prev, bio: res.data.bio }));
+    setEditingBio(false);
+  } catch (error) {
+    console.error('Error updating bio', error);
+  }
+};
 
   return (
     //but if user is found then it will display their profile onto to the screen
@@ -71,11 +100,36 @@ const UserPage = () => {
           </div>
           <div className="profile-bio">
             <p className="username">{userData.userName}</p>
-            <p className="bio">{userData.bio || ''}</p>
-          </div>
-          <button className="follow-button">Change Bio</button>
-          <button className="follow-button">Change Name</button>
-          <button className="follow-button">Change Image</button>
+              {editingBio ? (
+      <>
+        <textarea
+          className="bio-input"
+          value={bioDraft}
+          onChange={(e) => setBioDraft(e.target.value)}
+          rows={3}
+        />
+        <div>
+          <button className="follow-button" onClick={handleSaveBio}>
+            Save
+          </button>
+          <button
+            className="follow-button"
+            onClick={() => setEditingBio(false)}
+            style={{ marginLeft: '8px' }}
+          >
+            Cancel
+          </button>
+        </div>
+      </>
+    ) : (
+      <>
+        <p className="bio">{userData.bio || ''}</p>
+        <button className="follow-button" onClick={handleStartEditBio}>
+          Change Bio
+        </button>
+      </>
+    )}
+  </div>
         </div>
       </div>
       <div className="profile-tabs">

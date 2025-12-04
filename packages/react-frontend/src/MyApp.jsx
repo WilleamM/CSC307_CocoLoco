@@ -17,7 +17,7 @@ import CreatePost from './Pages/Create_Post.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
 const API_PREFIX =
-  'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net'; //'http://localhost:8000';
+  /*'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net';*/ 'http://localhost:8000';
 
 //Home page
 function Home() {
@@ -62,10 +62,11 @@ function MyApp() {
     })
       .then((response) => {
         if (response.status === 200) {
-          response.json().then((payload) => {
+          return response.json().then((payload) => {
             setToken(payload.token);
             localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
             setMessage(`Login successful; auth token saved`);
+            return payload;
           });
         } else {
           setMessage(`Login Error ${response.status}: ${response.data}`);

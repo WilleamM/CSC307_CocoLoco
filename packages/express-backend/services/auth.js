@@ -24,6 +24,7 @@ export function registerUser(req, res) {
       .genSalt(10)
       .then((salt) => bcrypt.hash(password, salt))
       .then((hashedPassword) => {
+        creds.push({ userName, hashedPassword });
         return generateAccessToken(userName).then((token) => {
           console.log('Token:', token);
           //Used to save the user and send a response
@@ -98,26 +99,26 @@ export function authenticateUser(req, res, next) {
 // to: app.post("/login", loginUser);
 export function loginUser(req, res) {
   const { userName, password } = req.body; // from form
-  const retrievedUser = creds.find((c) => c.userName === userName);
-
-  if (!retrievedUser) {
+  userServices.findUserByUserName(userName)
+  .then((retrievedUser) => {
+    if (!retrievedUser) {
     // invalid username
-    res.status(401).send('Unauthorized');
-  } else {
-    bcrypt
-      .compare(password, retrievedUser.hashedPassword)
-      .then((matched) => {
-        if (matched) {
-          generateAccessToken(userName).then((token) => {
-            res.status(200).send({ token: token });
-          });
-        } else {
-          // invalid password
-          res.status(401).send('Unauthorized');
-        }
-      })
-      .catch(() => {
-        res.status(401).send('Unauthorized');
-      });
-  }
+    return res.status(401).send('Unauthorized');
+  }// creds.find((c) => c.userName === userName);
+  return bcrypt
+    .compare(password, retrievedUser.password)
+    .then((matched) => {
+      if (matched) {
+        generateAccessToken(userName).then((token) => {
+          res.status(200).send({ token: token, userId: retrievedUser._id });
+        });
+      } else {
+        // invalid password
+        return res.status(401).send('Unauthorized');
+      }
+    });
+  })
+    .catch(() => {
+      res.status(401).send('Unauthorized');
+    });
 }

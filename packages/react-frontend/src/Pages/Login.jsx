@@ -32,9 +32,9 @@ function Login(props) {
   const submitForm = async (event) => {
     event.preventDefault();
     try {
-      await props.handleSubmit(creds);
+      const payload = await props.handleSubmit(creds);
       setMsg('User successfully logged in!\n');
-      navigate(`/user/${creds._id}`);
+      navigate(`/user/${payload.userId}`);
     } catch (error) {
       console.error('Error logging user:', error);
       setMsg(error.response?.data || 'Error logging User');
