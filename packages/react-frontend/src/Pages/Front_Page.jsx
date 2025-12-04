@@ -106,6 +106,7 @@ const FrontPage = () => {
                   <div className="post-date">
                     {new Date(post.publishedAt).toLocaleDateString()}
                   </div>
+                  {post.title && <div className="post-title">{post.title}</div>}
                   <div className="post-cap">{post.body}</div>
                 </div>
               </div>
@@ -152,21 +153,6 @@ const FrontPage = () => {
         {hasMorePostsRef.current === false && <div>No more posts to load.</div>}
       </div>
 
-      {/* Right Column: Other content like leaderboard */}
-      <div className="right-column">
-        <span>Most Followed People</span>
-        <div className="profile-image">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
-            alt="profile"
-          />
-        </div>
-        <div className="profile-info">
-          <div className="display-name">UserName</div>
-          <div className="followers">500</div>
-          <span>Followers</span>
-        </div>
-      </div>
     </div>
   );
 };

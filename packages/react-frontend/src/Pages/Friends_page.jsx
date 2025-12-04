@@ -62,6 +62,7 @@ const FriendsPage = ({ userId }) => {
                   <div className="post-date">
                     {new Date(post.publishedAt).toLocaleDateString()}
                   </div>
+                  {post.title && <div className="post-title">{post.title}</div>}
                   <div className="post-cap">{post.body}</div>
                 </div>
               </div>
