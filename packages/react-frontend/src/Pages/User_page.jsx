@@ -49,31 +49,31 @@ const UserPage = () => {
   }
 
   const handleStartEditBio = () => {
-  setBioDraft(userData.bio || '');
-  setEditingBio(true);
-};
+    setBioDraft(userData.bio || '');
+    setEditingBio(true);
+  };
 
-const handleSaveBio = async () => {
-  try {
-    const token = localStorage.getItem('authToken');
+  const handleSaveBio = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
 
-    const res = await axios.put(
-      `http://localhost:8000/users/${userId}/bio`,
-      { bio: bioDraft },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+      const res = await axios.put(
+        `http://localhost:8000/users/${userId}/bio`,
+        { bio: bioDraft },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    // Update local user data with new bio
-    setUserData((prev) => ({ ...prev, bio: res.data.bio }));
-    setEditingBio(false);
-  } catch (error) {
-    console.error('Error updating bio', error);
-  }
-};
+      // Update local user data with new bio
+      setUserData((prev) => ({ ...prev, bio: res.data.bio }));
+      setEditingBio(false);
+    } catch (error) {
+      console.error('Error updating bio', error);
+    }
+  };
 
   return (
     //but if user is found then it will display their profile onto to the screen
@@ -100,36 +100,36 @@ const handleSaveBio = async () => {
           </div>
           <div className="profile-bio">
             <p className="username">{userData.userName}</p>
-              {editingBio ? (
-      <>
-        <textarea
-          className="bio-input"
-          value={bioDraft}
-          onChange={(e) => setBioDraft(e.target.value)}
-          rows={3}
-        />
-        <div>
-          <button className="follow-button" onClick={handleSaveBio}>
-            Save
-          </button>
-          <button
-            className="follow-button"
-            onClick={() => setEditingBio(false)}
-            style={{ marginLeft: '8px' }}
-          >
-            Cancel
-          </button>
-        </div>
-      </>
-    ) : (
-      <>
-        <p className="bio">{userData.bio || ''}</p>
-        <button className="follow-button" onClick={handleStartEditBio}>
-          Change Bio
-        </button>
-      </>
-    )}
-  </div>
+            {editingBio ? (
+              <>
+                <textarea
+                  className="bio-input"
+                  value={bioDraft}
+                  onChange={(e) => setBioDraft(e.target.value)}
+                  rows={3}
+                />
+                <div>
+                  <button className="follow-button" onClick={handleSaveBio}>
+                    Save
+                  </button>
+                  <button
+                    className="follow-button"
+                    onClick={() => setEditingBio(false)}
+                    style={{ marginLeft: '8px' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="bio">{userData.bio || ''}</p>
+                <button className="follow-button" onClick={handleStartEditBio}>
+                  Change Bio
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
       <div className="profile-tabs">

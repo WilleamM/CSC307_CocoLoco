@@ -51,11 +51,11 @@ function MyApp() {
     const savedToken = localStorage.getItem('authToken');
     const savedUserId = localStorage.getItem('userId');
 
-    if(savedToken){
+    if (savedToken) {
       setToken(savedToken);
     }
-    if(savedUserId){
-      setUser({ id: savedUserId});
+    if (savedUserId) {
+      setUser({ id: savedUserId });
     }
   }, []);
 
@@ -71,7 +71,7 @@ function MyApp() {
         if (response.status === 200) {
           return response.json().then((payload) => {
             setToken(payload.token);
-            setUser({ id: payload.userId, userName: payload.userName});
+            setUser({ id: payload.userId, userName: payload.userName });
             localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
             localStorage.setItem('userId', payload.userId);
             setMessage(`Login successful; auth token saved`);
@@ -108,7 +108,7 @@ function MyApp() {
         if (response.status === 201) {
           return response.json().then((payload) => {
             setToken(payload.token);
-            setUser({ id: payload.userId, userName: payload.userName});
+            setUser({ id: payload.userId, userName: payload.userName });
             localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
             localStorage.setItem('userId', payload.userId);
             setMessage(
@@ -191,7 +191,7 @@ function MyApp() {
           path="/friends"
           element={
             <ProtectedRoute token={token}>
-              <FriendsPage userId={user?.id}/>
+              <FriendsPage userId={user?.id} />
             </ProtectedRoute>
           }
         />

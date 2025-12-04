@@ -174,22 +174,22 @@ app.get('/users/', (req, res) => {
 app.post('/login', loginUser);
 app.post('/signup', registerUser);
 
-
 app.put('/users/:id/bio', authenticateUser, (req, res) => {
   const userId = req.params.id;
-  const {bio} = req.body;
+  const { bio } = req.body;
 
-  userServices.updateUser(userId, {bio})
-  .then((updatedUser) => {
-    if(!updatedUser){
-      return res.status(404).send('User not found!');
-    }
-    res.status(201).send({bio: updatedUser.bio})
-  })
-  .catch((error) => {
-    console.error("Error updating user");
-    res.status(500).send('Error updating bio');
-  });
+  userServices
+    .updateUser(userId, { bio })
+    .then((updatedUser) => {
+      if (!updatedUser) {
+        return res.status(404).send('User not found!');
+      }
+      res.status(201).send({ bio: updatedUser.bio });
+    })
+    .catch((error) => {
+      console.error('Error updating user');
+      res.status(500).send('Error updating bio');
+    });
 });
 
 //app.get('/users', authenticateUser, getUsers);

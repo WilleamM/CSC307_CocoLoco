@@ -99,25 +99,26 @@ export function authenticateUser(req, res, next) {
 // to: app.post("/login", loginUser);
 export function loginUser(req, res) {
   const { userName, password } = req.body; // from form
-  userServices.findUserByUserName(userName)
-  .then((retrievedUser) => {
-    if (!retrievedUser) {
-    // invalid username
-    return res.status(401).send('Unauthorized');
-  }// creds.find((c) => c.userName === userName);
-  return bcrypt
-    .compare(password, retrievedUser.password)
-    .then((matched) => {
-      if (matched) {
-        generateAccessToken(userName).then((token) => {
-          res.status(200).send({ token: token, userId: retrievedUser._id });
-        });
-      } else {
-        // invalid password
+  userServices
+    .findUserByUserName(userName)
+    .then((retrievedUser) => {
+      if (!retrievedUser) {
+        // invalid username
         return res.status(401).send('Unauthorized');
-      }
-    });
-  })
+      } // creds.find((c) => c.userName === userName);
+      return bcrypt
+        .compare(password, retrievedUser.password)
+        .then((matched) => {
+          if (matched) {
+            generateAccessToken(userName).then((token) => {
+              res.status(200).send({ token: token, userId: retrievedUser._id });
+            });
+          } else {
+            // invalid password
+            return res.status(401).send('Unauthorized');
+          }
+        });
+    })
     .catch(() => {
       res.status(401).send('Unauthorized');
     });

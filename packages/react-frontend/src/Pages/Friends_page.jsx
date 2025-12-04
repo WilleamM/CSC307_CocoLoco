@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import './Front_Page.css';
 
-const FriendsPage = ({userId}) => {
+const FriendsPage = ({ userId }) => {
   const [posts, setPosts] = useState([]);
   const hasMorePostsRef = useRef(true); // tracks if there are more posts to load
   const loadingRef = useRef(false); // tracks if data is being fetched

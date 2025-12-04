@@ -26,7 +26,7 @@ function updateUser(id, updates) {
   return User.findByIdAndUpdate(id, updates, { new: true });
 }
 
-function findUserByUserName(userName){
+function findUserByUserName(userName) {
   return User.findOne({ userName }).lean();
 }
 
