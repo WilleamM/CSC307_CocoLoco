@@ -46,6 +46,10 @@
   transition: transform 0.2s;
 }
 
+.theme-toggle {
+  color: #333;
+}
+
 .friends-only-icon {
   color: black;
 }
@@ -132,6 +136,51 @@
 
 .dropdown-menu li button:hover {
   background-color: #f4f4f4;
+}
+
+body.dark-mode {
+  background: #0f1115;
+  color: #e8e8e8;
+}
+
+body.dark-mode .front-page {
+  background: #0f1115;
+  border-top-color: #1f232b;
+}
+
+body.dark-mode .left-column,
+body.dark-mode .middle-column,
+body.dark-mode .right-column,
+body.dark-mode .post-rec {
+  background: #161b22;
+  border-color: #232a34;
+  color: #e8e8e8;
+}
+
+body.dark-mode .post-header .display-name,
+body.dark-mode .post-title,
+body.dark-mode .post-cap,
+body.dark-mode .post-date,
+body.dark-mode .left-text {
+  color: #e8e8e8;
+}
+
+body.dark-mode .dropdown-menu {
+  background: #161b22;
+  border-color: #232a34;
+  color: #e8e8e8;
+}
+
+body.dark-mode .dropdown-menu li button {
+  color: #e8e8e8;
+}
+
+body.dark-mode .dropdown-menu li button:hover {
+  background-color: #1f2630;
+}
+
+body.dark-mode button {
+  background-color: #2563eb;
 }
 
 /* Modal styling for edit profile */

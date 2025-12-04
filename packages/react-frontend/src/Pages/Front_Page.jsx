@@ -152,7 +152,6 @@ const FrontPage = () => {
 
         {hasMorePostsRef.current === false && <div>No more posts to load.</div>}
       </div>
-
     </div>
   );
 };
