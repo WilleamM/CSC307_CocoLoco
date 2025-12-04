@@ -93,36 +93,6 @@ const ProfilePage = () => {
               e.target.src = placeholderImage;
             }}
           />
-          {/* Simple file input for uploading avatar */}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={async (e) => {
-              const file = e.target.files[0];
-              if (!file) return;
-
-              const formData = new FormData();
-              formData.append('avatar', file);
-
-              try {
-                await axios.post(
-                  `${API_BASE_URL}/users/${userId}/avatar`,
-                  formData,
-                  { headers: { 'Content-Type': 'multipart/form-data' } }
-                );
-                // Refetch user data to get updated avatarUrl
-                const userResponse = await axios.get(
-                  `${API_BASE_URL}/users/${userId}`
-                );
-                setUserData(userResponse.data);
-                console.log('Avatar uploaded successfully');
-              } catch (error) {
-                console.error('Error uploading avatar:', error);
-                alert('Failed to upload avatar');
-              }
-            }}
-            style={{ marginTop: '10px' }}
-          />
         </div>
         <div className="profile-info">
           <h2 className="display-name">{userData.displayName}</h2>

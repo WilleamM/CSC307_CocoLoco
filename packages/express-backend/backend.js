@@ -47,38 +47,44 @@ app.get('/posts', (req, res) => {
 
 // POST /posts
 // Creates a new post with optional image
-app.post('/posts', authenticateUser, upload.single('image'), async (req, res) => {
+app.post('/posts', authenticateUser, upload.single('image'), (req, res) => {
   const { title, body, visibility } = req.body;
 
   if (!body) {
     return res.status(400).send('Missing required fields');
   }
 
-  try {
-    const currentUser = await userServices.findUserByUserName(req.user.userName);
-    if (!currentUser) {
-      return res.status(401).send('Unauthorized');
-    }
+  userServices
+    .findUserByUserName(req.user.userName)
+    .then((currentUser) => {
+      if (!currentUser) {
+        res.status(401).send('Unauthorized');
+        return null;
+      }
 
-    const newPost = {
-      authorId: currentUser._id,
-      author: currentUser.userName,
-      title,
-      body,
-      visibility: visibility || 'friends',
-    };
+      const newPost = {
+        authorId: currentUser._id,
+        author: currentUser.userName,
+        title,
+        body,
+        visibility: visibility || 'friends',
+      };
 
-    if (req.file) {
-      newPost.image = req.file.buffer;
-      newPost.imageContentType = req.file.mimetype;
-    }
+      if (req.file) {
+        newPost.image = req.file.buffer;
+        newPost.imageContentType = req.file.mimetype;
+      }
 
-    const savedPost = await postServices.addPost(newPost);
-    return res.status(201).send(savedPost);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send('Failed to create post');
-  }
+      return postServices.addPost(newPost);
+    })
+    .then((savedPost) => {
+      if (!savedPost) return;
+      res.status(201).send(savedPost);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Failed to create post');
+    });
 });
 
 // GET /posts/:id
@@ -216,29 +222,33 @@ app.get('/users/', (req, res) => {
 app.post('/login', loginUser);
 app.post('/signup', registerUser);
 
-app.get('/feed', authenticateUser, async (req, res) => {
-  try {
-    const userName = req.user.userName;
-    if (!userName) {
-      return res.status(401).send('No user in the token');
-    }
-
-    const user = await userServices.findUserByUserName(userName);
-    if (!user) {
-      return res.status(404).send('User not found');
-    }
-
-    const userId = user._id;
-    const friendIds = user.friendIds || [];
-
-    const authorsToShow = [userId, ...friendIds];
-    const posts = await postServices.getPostByFriendIds(authorsToShow);
-
-    res.send({ posts_list: posts });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Failed to fetech');
+app.get('/feed', authenticateUser, (req, res) => {
+  const userName = req.user.userName;
+  if (!userName) {
+    return res.status(401).send('No user in the token');
   }
+
+  userServices
+    .findUserByUserName(userName)
+    .then((user) => {
+      if (!user) {
+        res.status(404).send('User not found');
+        return null;
+      }
+
+      const userId = user._id;
+      const friendIds = user.friendIds || [];
+      const authorsToShow = [userId, ...friendIds];
+      return postServices.getPostByFriendIds(authorsToShow);
+    })
+    .then((posts) => {
+      if (!posts) return;
+      res.send({ posts_list: posts });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Failed to fetech');
+    });
 });
 
 app.put('/users/:id/bio', authenticateUser, (req, res) => {
@@ -333,6 +343,53 @@ app.post('/users/:id/avatar', upload.single('avatar'), (req, res) => {
     });
 });
 
+// PUT /users/:id/profile
+// Updates displayName, bio, and/or avatar for a user
+app.put(
+  '/users/:id/profile',
+  authenticateUser,
+  upload.single('avatar'),
+  (req, res) => {
+    const id = req.params.id;
+    const { displayName, bio } = req.body;
+
+    userServices
+      .findUserByIdForUpdate(id)
+      .then((user) => {
+        if (!user) {
+          return res.status(404).send('User not found');
+        }
+
+        if (displayName !== undefined) {
+          user.displayName = displayName;
+        }
+        if (bio !== undefined) {
+          user.bio = bio;
+        }
+        if (req.file) {
+          user.avatar = req.file.buffer;
+          user.avatarContentType = req.file.mimetype;
+          user.avatarUrl = `/users/${id}/avatar`;
+        }
+
+        return user.save();
+      })
+      .then((updated) => {
+        if (!updated) return;
+        res.send({
+          userId: updated._id,
+          displayName: updated.displayName,
+          bio: updated.bio,
+          avatarUrl: updated.avatarUrl,
+        });
+      })
+      .catch((error) => {
+        console.error('Error updating profile', error);
+        res.status(500).send('Failed to update profile');
+      });
+  }
+);
+
 // GET /users/:id/avatar
 // Retrieves a user's profile picture
 app.get('/users/:id/avatar', (req, res) => {
@@ -424,7 +481,7 @@ body: {
 }
 Returns the created comment
 */
-app.post('/posts/:postId/comments', authenticateUser, async (req, res) => {
+app.post('/posts/:postId/comments', authenticateUser, (req, res) => {
   const postId = req.params.postId;
   const { content } = req.body;
 
@@ -432,25 +489,37 @@ app.post('/posts/:postId/comments', authenticateUser, async (req, res) => {
     return res.status(400).send('content is required');
   }
 
-  try {
-    const currentUser = await userServices.findUserByUserName(req.user.userName);
-    if (!currentUser) {
-      return res.status(401).send('Unauthorized');
-    }
+  let currentUserData;
+  let createdComment;
 
-    const createdComment = await commentServices.createComment({
-      postId,
-      authorId: currentUser._id,
-      authorHandle: currentUser.userName,
-      content,
+  userServices
+    .findUserByUserName(req.user.userName)
+    .then((currentUser) => {
+      if (!currentUser) {
+        res.status(401).send('Unauthorized');
+        return null;
+      }
+      currentUserData = currentUser;
+      return commentServices.createComment({
+        postId,
+        authorId: currentUser._id,
+        authorHandle: currentUser.userName,
+        content,
+      });
+    })
+    .then((comment) => {
+      if (!comment) return null;
+      createdComment = comment;
+      return commentServices.addCommentToPost(postId, comment._id);
+    })
+    .then(() => {
+      if (!createdComment) return;
+      res.status(201).send(createdComment);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Failed to create comment');
     });
-
-    await commentServices.addCommentToPost(postId, createdComment._id);
-    return res.status(201).send(createdComment);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send('Failed to create comment');
-  }
 });
 
 // DELETE /users/:id

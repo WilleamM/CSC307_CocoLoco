@@ -11,6 +11,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { API_BASE_URL } from '../apiConfig.js';
+import axios from 'axios';
 
 function Page_Header({ user, onLogout }) {
   const location = useLocation(); //gets the current path
@@ -18,6 +19,13 @@ function Page_Header({ user, onLogout }) {
   const [dropdownOpen, setDropdownOpen] = useState(false); //will be for the control of dropdown visibility
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editDisplayName, setEditDisplayName] = useState(
+    localStorage.getItem('userName') || ''
+  );
+  const [editBio, setEditBio] = useState('');
+  const [editAvatar, setEditAvatar] = useState(null);
+  const [statusMsg, setStatusMsg] = useState('');
 
   if (location.pathname === '/login') {
     return null; // will return null once it goes to login page so the header won't render
@@ -77,6 +85,43 @@ function Page_Header({ user, onLogout }) {
       console.error('Error fetching users for search:', err);
       setSearchResults([]);
     }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user?.id) {
+      navigate('/login');
+      return;
+    }
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('displayName', editDisplayName);
+    formData.append('bio', editBio);
+    if (editAvatar) {
+      formData.append('avatar', editAvatar);
+    }
+
+    setStatusMsg('Saving...');
+
+    axios
+      .put(`${API_BASE_URL}/users/${user.id}/profile`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setStatusMsg('Profile updated');
+        setShowEditModal(false);
+      })
+      .catch((error) => {
+        console.error('Error updating profile', error);
+        setStatusMsg('Failed to update profile');
+      });
   };
 
   return (
@@ -139,6 +184,19 @@ function Page_Header({ user, onLogout }) {
                   {/*still got to put it to go to specific user id  */}
                 </li>
                 <li>
+                  <button
+                    onClick={() => {
+                      if (user?.id) {
+                        setShowEditModal(true);
+                      } else {
+                        navigate('/login');
+                      }
+                    }}
+                  >
+                    Edit Profile
+                  </button>
+                </li>
+                <li>
                   <button onClick={goToSignInPage}>Sign Out</button>
                 </li>
               </ul>
@@ -146,6 +204,58 @@ function Page_Header({ user, onLogout }) {
           )}
         </div>
       </div>
+      {showEditModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowEditModal(false)}
+        >
+          <div
+            className="modal"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <h3>Edit Profile</h3>
+            <label>
+              Display Name
+              <input
+                type="text"
+                value={editDisplayName}
+                onChange={(e) => setEditDisplayName(e.target.value)}
+              />
+            </label>
+            <label>
+              Bio
+              <textarea
+                rows={3}
+                value={editBio}
+                onChange={(e) => setEditBio(e.target.value)}
+              />
+            </label>
+            <label>
+              Avatar
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setEditAvatar(e.target.files?.[0] || null)}
+              />
+            </label>
+            {statusMsg && <div className="status">{statusMsg}</div>}
+            <div style={{ marginTop: '10px' }}>
+              <button className="follow-button" onClick={handleSaveProfile}>
+                Save
+              </button>
+              <button
+                className="follow-button"
+                onClick={() => setShowEditModal(false)}
+                style={{ marginLeft: '8px' }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
