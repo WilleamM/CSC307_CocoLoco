@@ -45,8 +45,15 @@ const FrontPage = () => {
   // Fetch suggested users
   useEffect(() => {
     const fetchSuggestedUsers = async () => {
+      const storedId = localStorage.getItem('userId');
+      if (!storedId) {
+        setSuggestedUsers([]);
+        return;
+      }
       try {
-        const response = await axios.get(`${API_BASE_URL}/suggested-users`);
+        const response = await axios.get(`${API_BASE_URL}/suggested-users`, {
+          params: { id: storedId },
+        });
         setSuggestedUsers(response.data.suggestedUsers || []);
       } catch (error) {
         console.error('Error fetching suggested users:', error);
