@@ -18,7 +18,7 @@ import FriendsPage from './Pages/Friends_page.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
 const API_PREFIX =
-  /*'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net';*/ 'http://localhost:8000';
+  'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net';
 
 //Home page
 function Home() {

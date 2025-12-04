@@ -15,8 +15,7 @@ const UserPage = () => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/users/${userId}`
-          //`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
+          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
         );
         setUserData(response.data);
       } catch (error) {
@@ -31,8 +30,7 @@ const UserPage = () => {
     const fetchUserPost = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/posts/${userId}`,
-          //`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${userId}`,
+          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${userId}`,
           { params: { author: userId } }
         );
         setUserPost(response.data);
@@ -58,7 +56,7 @@ const UserPage = () => {
       const token = localStorage.getItem('authToken');
 
       const res = await axios.put(
-        `http://localhost:8000/users/${userId}/bio`,
+        `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}/bio`,
         { bio: bioDraft },
         {
           headers: {
