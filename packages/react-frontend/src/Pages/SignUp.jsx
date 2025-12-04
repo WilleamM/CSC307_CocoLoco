@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  useNavigate,
+} from 'react-router-dom';
 import axios from 'axios'; // fetches data from an API
 import './SignUp.css';
 
 function SignUp(props) {
+  const navigate = useNavigate();
   const [creds, setCreds] = useState({
     userName: '',
     displayName: '',
@@ -26,33 +33,16 @@ function SignUp(props) {
     }
   };
 
-  // checks when you input text into text boxes
-  // then setPerson updates person
-
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { userName, displayName, password } = creds;
-      const response = await axios.post(
-        'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users',
-        {
-          userName,
-          displayName,
-          password,
-        }
-      );
-      console.log('User registered:', response.data);
+      const payload = await props.handleSubmit(creds);
       setMsg('User successfully Created!');
       // Handle successful registration (e.g., redirect, show success message)
+      navigate(`/user/${payload.userId}`);
     } catch (error) {
       console.error('Error registering user:', error);
       setMsg(error.response?.data || 'Error Creating User');
-      console.log(
-        'Status:',
-        error.response?.status,
-        'Body:',
-        error.response?.data
-      );
     }
   };
 
@@ -62,7 +52,7 @@ function SignUp(props) {
         {' '}
         {/* ← the rectangle */}
         <h1>Sign Up</h1>
-        <form className="signup-form">
+        <form className="signup-form" onSubmit={onSubmit}>
           <input
             type="text"
             name="userName"
@@ -87,11 +77,7 @@ function SignUp(props) {
             value={creds.password}
             onChange={handleChange}
           />
-          <input
-            type="button"
-            value={props.buttonLabel || 'Sign Up'}
-            onClick={handleSubmit}
-          />
+          <input type="submit" value={props.buttonLabel || 'Sign Up'} />
         </form>
         {msg && <p>{msg}</p>}
         <p>

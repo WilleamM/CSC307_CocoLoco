@@ -23,7 +23,11 @@ function deleteUserById(id) {
 
 function updateUser(id, updates) {
   //this will update the User data if needed
-  return userModel.findByIdAndUpdate(id, updates, { new: true });
+  return User.findByIdAndUpdate(id, updates, { new: true });
+}
+
+function findUserByUserName(userName){
+  return User.findOne({ userName }).lean();
 }
 
 function getSuggestedUsers(userId) {
@@ -51,4 +55,5 @@ export default {
   deleteUserById,
   updateUser,
   getSuggestedUsers,
+  findUserByUserName,
 };

@@ -1,35 +1,61 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import 'dotenv/config';
+import userServices from './user-services.js';
 
 const creds = [];
 
 // registerUser: For creating a new user
 export function registerUser(req, res) {
-  const { username, pwd } = req.body; // from form
+  const { userName, password } = req.body; // from form
 
-  if (!username || !pwd) {
-    res.status(400).send('Bad request: Invalid input data.');
-  } else if (creds.find((c) => c.username === username)) {
-    res.status(409).send('Username already taken');
+  let error;
+
+  if (!userName || !password) {
+    error = new Error('Bad request: Invalid input data.');
+    error.statusCode = 400;
+    throw error;
+  } else if (creds.find((c) => c.userName === userName)) {
+    error = new Error('Username already taken.');
+    error.statusCode = 409;
+    throw error;
   } else {
-    bcrypt
+    const promise = bcrypt
       .genSalt(10)
-      .then((salt) => bcrypt.hash(pwd, salt))
+      .then((salt) => bcrypt.hash(password, salt))
       .then((hashedPassword) => {
-        generateAccessToken(username).then((token) => {
+        creds.push({ userName, hashedPassword });
+        return generateAccessToken(userName).then((token) => {
           console.log('Token:', token);
-          res.status(201).send({ token: token });
-          creds.push({ username, hashedPassword });
+          //Used to save the user and send a response
+          return userServices
+            .addUser({
+              userName,
+              displayName: userName,
+              password: hashedPassword,
+            })
+            .then((newUser) => {
+              res.status(201).send({ token: token, userId: newUser._id });
+            });
         });
       });
+
+    promise.catch((error) => {
+      console.error('error registering user', error);
+      if (!res.headersSent) {
+        res.status(500).send('Code error');
+      }
+    });
+
+    return promise;
   }
 }
 
 // Helper function to generate an access token (a client uses this to show it's signed in):
-function generateAccessToken(username) {
+function generateAccessToken(userName) {
   return new Promise((resolve, reject) => {
     jwt.sign(
-      { username: username },
+      { userName: userName },
       process.env.TOKEN_SECRET,
       { expiresIn: '1d' },
       (error, token) => {
@@ -70,29 +96,29 @@ export function authenticateUser(req, res, next) {
 // loginUser: To validate provided credentials and generate an access token
 // Example usage in backend.js (make sure auth.js is imported):
 // updated from: *empty line*
-// to: app.post("/login", registerUser);
+// to: app.post("/login", loginUser);
 export function loginUser(req, res) {
-  const { username, pwd } = req.body; // from form
-  const retrievedUser = creds.find((c) => c.username === username);
-
-  if (!retrievedUser) {
+  const { userName, password } = req.body; // from form
+  userServices.findUserByUserName(userName)
+  .then((retrievedUser) => {
+    if (!retrievedUser) {
     // invalid username
-    res.status(401).send('Unauthorized');
-  } else {
-    bcrypt
-      .compare(pwd, retrievedUser.hashedPassword)
-      .then((matched) => {
-        if (matched) {
-          generateAccessToken(username).then((token) => {
-            res.status(200).send({ token: token });
-          });
-        } else {
-          // invalid password
-          res.status(401).send('Unauthorized');
-        }
-      })
-      .catch(() => {
-        res.status(401).send('Unauthorized');
-      });
-  }
+    return res.status(401).send('Unauthorized');
+  }// creds.find((c) => c.userName === userName);
+  return bcrypt
+    .compare(password, retrievedUser.password)
+    .then((matched) => {
+      if (matched) {
+        generateAccessToken(userName).then((token) => {
+          res.status(200).send({ token: token, userId: retrievedUser._id });
+        });
+      } else {
+        // invalid password
+        return res.status(401).send('Unauthorized');
+      }
+    });
+  })
+    .catch(() => {
+      res.status(401).send('Unauthorized');
+    });
 }

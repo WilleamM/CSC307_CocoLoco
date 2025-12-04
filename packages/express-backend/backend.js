@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import userServices from './services/user-services.js';
 import postServices from './services/post-services.js';
+import { registerUser, loginUser, authenticateUser } from './services/auth.js';
 import multer from 'multer';
 
 // Configure Multer to store files in memory
@@ -10,13 +11,13 @@ const upload = multer({ storage: storage });
 
 // npx nodemon backend.js
 const app = express();
-const port = Number(process.env.PORT) || 8000;
+const port = 8000; //Number(process.env.PORT) || 8000;
 app.use(cors());
 app.use(express.json());
 
 // health check
 app.get('/', (req, res) => {
-  return res.send('Hello World!');
+  return res.send('Hello World v2!');
 });
 
 // NOTE: For endpoint creation show:
@@ -170,6 +171,30 @@ app.get('/users/', (req, res) => {
     });
 });
 
+app.post('/login', loginUser);
+app.post('/signup', registerUser);
+
+
+app.put('/users/:id/bio', authenticateUser, (req, res) => {
+  const userId = req.params.id;
+  const {bio} = req.body;
+
+  userServices.updateUser(userId, {bio})
+  .then((updatedUser) => {
+    if(!updatedUser){
+      return res.status(404).send('User not found!');
+    }
+    res.status(201).send({bio: updatedUser.bio})
+  })
+  .catch((error) => {
+    console.error("Error updating user");
+    res.status(500).send('Error updating bio');
+  });
+});
+
+//app.get('/users', authenticateUser, getUsers);
+//app.post('/posts', authenticateUser, add)
+
 // GET /users/:id
 // Example: GET http://localhost:8000/users/671eb54c8ddad1d8cf7a0012
 // Returns a single user's profile by their id
@@ -301,17 +326,23 @@ Example: POST http://localhost:8000/users
 app.post('/users', (req, res) => {
   console.log('BODY RECEIVED:', req.body);
   const { userName, displayName, password = '' } = req.body;
-  if (!userName || !displayName) {
+  if (!userName || !displayName || !password) {
     return res
       .status(400)
       .send('username, display name, and password are required!');
   }
-  userServices
-    .addUser({ userName, displayName, password })
-    .then((created) => res.status(201).send(created))
+
+  registerUser(req)
+    .then(({ hashedPassword, token }) => {
+      userServices
+        .addUser({ userName, displayName, password: hashedPassword })
+        .then((created) => {
+          res.status(201).send({ user: created, token });
+        });
+    })
     .catch((err) => {
       console.error(err);
-      res.status(400).send(err.message ?? 'Failed to create user');
+      res.status(err.statusCode).send(err.message ?? 'Failed to create user');
     });
 });
 

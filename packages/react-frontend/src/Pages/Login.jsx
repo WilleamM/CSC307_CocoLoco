@@ -1,12 +1,51 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  useNavigate,
+} from 'react-router-dom';
 import './Login.css';
 
 function Login(props) {
+  const navigate = useNavigate();
   const [creds, setCreds] = useState({
     userName: '',
     password: '',
   });
+  const [msg, setMsg] = useState('');
+
+  // checks when you input text into text boxes
+  function handleChange(event) {
+    const { name, value } = event.target;
+    switch (name) {
+      case 'userName':
+        setCreds({ ...creds, userName: value });
+        break;
+      case 'password':
+        setCreds({ ...creds, password: value });
+        break;
+    }
+  }
+
+  const submitForm = async (event) => {
+    event.preventDefault();
+    try {
+      const payload = await props.handleSubmit(creds);
+      setMsg('User successfully logged in!\n');
+      navigate(`/user/${payload.userId}`);
+    } catch (error) {
+      console.error('Error logging user:', error);
+      setMsg(error.response?.data || 'Error logging User');
+      console.log(
+        'Status:',
+        error.response?.status,
+        'Body:',
+        error.response?.data
+      );
+    }
+  };
 
   return (
     <div className="login">
@@ -14,7 +53,7 @@ function Login(props) {
         {' '}
         {/* ← the rectangle */}
         <h1>Login</h1>
-        <form className="login-form">
+        <form className="login-form" onSubmit={submitForm}>
           <input
             type="text"
             name="userName"
@@ -31,11 +70,7 @@ function Login(props) {
             onChange={handleChange}
             placeholder="Password"
           />
-          <input
-            type="button"
-            value={props.buttonLabel || 'Login'}
-            onClick={submitForm}
-          />
+          <input type="submit" value={props.buttonLabel || 'Login'} />
         </form>
         <p>
           Don't have an account? <Link to="/signup">Sign up here</Link>
@@ -43,24 +78,6 @@ function Login(props) {
       </div>
     </div>
   );
-
-  // checks when you input text into text boxes
-  function handleChange(event) {
-    const { name, value } = event.target;
-    switch (name) {
-      case 'userName':
-        setCreds({ ...creds, userName: value });
-        break;
-      case 'password':
-        setCreds({ ...creds, password: value });
-        break;
-    }
-  }
-
-  function submitForm() {
-    props.handleSubmit(creds);
-    setCreds({ userName: '', password: '' });
-  }
 }
 
 export default Login;

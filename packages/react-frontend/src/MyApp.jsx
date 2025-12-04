@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  Navigate,
+} from 'react-router-dom';
 import ProfilePage from './Pages/Profile_Page.jsx';
 import Login from './Pages/Login.jsx';
 import SignUp from './Pages/SignUp.jsx';
+import User_page from './Pages/User_page.jsx';
+const INVALID_TOKEN = 'INVALID_TOKEN';
 import Page_Header from './Headers/Page_Header.jsx';
 import FrontPage from './Pages/Front_Page.jsx';
 import CreatePost from './Pages/Create_Post.jsx';
+import FriendsPage from './Pages/Friends_page.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
 const API_PREFIX =
-  'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net';
+  /*'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net';*/ 'http://localhost:8000';
 
 //Home page
 function Home() {
@@ -23,10 +32,32 @@ function Home() {
   );
 }
 
+//Used to login the user into their profile page
+function ProtectedRoute({ token, children }) {
+  if (token === 'INVALID_TOKEN') {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 // <Table characterData={characters}/> where characters is being passed to table as a prop
 function MyApp() {
-  const INVALID_TOKEN = 'INVALID_TOKEN';
   const [token, setToken] = useState(INVALID_TOKEN);
+  const [message, setMessage] = useState('');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem('authToken');
+    const savedUserId = localStorage.getItem('userId');
+
+    if(savedToken){
+      setToken(savedToken);
+    }
+    if(savedUserId){
+      setUser({ id: savedUserId});
+    }
+  }, []);
 
   function loginUser(creds) {
     const promise = fetch(`${API_PREFIX}/login`, {
@@ -38,18 +69,32 @@ function MyApp() {
     })
       .then((response) => {
         if (response.status === 200) {
-          response.json().then((payload) => setToken(payload.token));
-          console.log(`Login successful; auth token saved`);
+          return response.json().then((payload) => {
+            setToken(payload.token);
+            setUser({ id: payload.userId, userName: payload.userName});
+            localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
+            localStorage.setItem('userId', payload.userId);
+            setMessage(`Login successful; auth token saved`);
+            return payload;
+          });
         } else {
-          console.log(`Login Error ${response.status}: ${response.data}`);
+          setMessage(`Login Error ${response.status}: ${response.data}`);
+          throw new Error('Login failed\n');
         }
       })
       .catch((error) => {
-        console.log(`Login Error: ${error}`);
+        setMessage(`Login Error: ${error}`);
+        throw error;
       });
 
     return promise;
   }
+
+  //This is going to be used to logout the user
+  //function logoutUser() {
+  //  setToken(INVALID_TOKEN);
+  //  localStorage.removeItem('authToken');
+  //}
 
   function signupUser(creds) {
     const promise = fetch(`${API_PREFIX}/signup`, {
@@ -61,10 +106,16 @@ function MyApp() {
     })
       .then((response) => {
         if (response.status === 201) {
-          response.json().then((payload) => setToken(payload.token));
-          console.log(
-            `Signup successful for user: ${creds.username}; auth token saved`
-          );
+          return response.json().then((payload) => {
+            setToken(payload.token);
+            setUser({ id: payload.userId, userName: payload.userName});
+            localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
+            localStorage.setItem('userId', payload.userId);
+            setMessage(
+              `Signup successful for user: ${creds.username}; auth token saved`
+            );
+            return payload;
+          });
         } else {
           console.log(`Signup Error ${response.status}: ${response.data}`);
         }
@@ -120,32 +171,35 @@ function MyApp() {
           path="/signup"
           element={<SignUp handleSubmit={signupUser} buttonLabel="Sign Up" />}
         />
+        <Route
+          path="/profile/:userId"
+          element={
+            <ProtectedRoute token={token}>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/:userId"
+          element={
+            <ProtectedRoute token={token}>
+              <User_page />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/friends"
+          element={
+            <ProtectedRoute token={token}>
+              <FriendsPage userId={user?.id}/>
+            </ProtectedRoute>
+          }
+        />
         <Route path="/create-post" element={<CreatePost />} />
-        <Route path="/profile/:userId" element={<ProfilePage />} />
         <Route path="*" element={<div>Not found</div>} />
       </Routes>
     </Router>
   );
 }
 
-//              AUTHENTICATION
-
-// Instructions say to make the below modification to useEffect() in MyApp(), but the original useEffect() was removed and MyApp()'s structure was changed.
-// However, it's unclear whether the below is necessary for authentication to function, so we may be able to get by without it.
-// If, in a future commit, authetication is working, these comments can be deleted.
-
-// Last existing useEffect() below
-// Deleted on commit 2089d5a
-/*
-useEffect(() => {
-  fetchUsers()
-    .then((res) => res.json())
-
-    .then((json) => setCharacters(json['users_list']))
-
-    .catch((error) => {
-      console.log(error);
-    });
-}, []);
-*/
 export default MyApp;
