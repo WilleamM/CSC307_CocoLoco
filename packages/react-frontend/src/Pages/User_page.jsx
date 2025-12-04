@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'; // fetches data from an API
 import './ProfilePage.css';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  Navigate,
+} from 'react-router-dom';
 
 const UserPage = () => {
   const { userId } = useParams();
@@ -15,8 +22,8 @@ const UserPage = () => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/users/${userId}`
-          //`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
+          //`http://localhost:8000/users/${userId}`
+          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
         );
         setUserData(response.data);
       } catch (error) {
@@ -31,8 +38,8 @@ const UserPage = () => {
     const fetchUserPost = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/posts/${userId}`,
-          //`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${userId}`,
+          //`http://localhost:8000/posts/${userId}`,
+          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${userId}`,
           { params: { author: userId } }
         );
         setUserPost(response.data);
@@ -58,7 +65,8 @@ const handleSaveBio = async () => {
     const token = localStorage.getItem('authToken');
 
     const res = await axios.put(
-      `http://localhost:8000/users/${userId}/bio`,
+      //`http://localhost:8000/users/${userId}/bio`,
+      'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}/bio',
       { bio: bioDraft },
       {
         headers: {
@@ -134,6 +142,11 @@ const handleSaveBio = async () => {
       </div>
       <div className="profile-tabs">
         <div className="tab active">Posts</div>
+      </div>
+      <div style={{ marginTop: '10px' }}>
+      <Link to="/friends">
+        <button className="follow-button">Go to Friends Feed</button>
+      </Link>
       </div>
       <div className="profile-posts">
         <div className="post-grid">
