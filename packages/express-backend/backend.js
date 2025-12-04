@@ -270,9 +270,11 @@ app.get('/feed', authenticateUser, (req, res) => {
         return null;
       }
 
-      const userId = user._id;
-      const friendIds = user.friendIds || [];
-      const authorsToShow = [userId, ...friendIds];
+      const friendIds = Array.isArray(user.friendIds) ? user.friendIds : [];
+      if (friendIds.length === 0) {
+        return [];
+      }
+      const authorsToShow = friendIds;
       return postServices.getPostByFriendIds(authorsToShow);
     })
     .then((posts) => {
@@ -405,6 +407,18 @@ app.post('/users/:id/follow', authenticateUser, (req, res) => {
     .catch((err) => {
       console.error('Error toggling follow', err);
       res.status(500).send('Failed to toggle follow');
+    });
+});
+
+// GET /users/:id/following - list users the current user follows
+app.get('/users/:id/following', authenticateUser, (req, res) => {
+  const id = req.params.id;
+  userServices
+    .getFollowingUsers(id)
+    .then((users) => res.send({ following: users }))
+    .catch((err) => {
+      console.error('Error fetching following users', err);
+      res.status(500).send('Failed to fetch following');
     });
 });
 

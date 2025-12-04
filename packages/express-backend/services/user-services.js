@@ -48,6 +48,24 @@ function getSuggestedUsers(userId) {
     });
 }
 
+function getFollowingUsers(userId) {
+  return User.findById(userId)
+    .then((user) => {
+      if (!user) throw new Error('User not found');
+      const friendIds = Array.isArray(user.friendIds) ? user.friendIds : [];
+      if (friendIds.length === 0) {
+        return [];
+      }
+      return User.find({ _id: { $in: friendIds } })
+        .select('userName displayName avatarUrl')
+        .lean();
+    })
+    .catch((err) => {
+      console.error('Error fetching following users:', err);
+      throw err;
+    });
+}
+
 function toggleFollow(userId, targetUserId) {
   if (String(userId) === String(targetUserId)) {
     return Promise.resolve({ updated: null, following: false });
@@ -101,5 +119,6 @@ export default {
   updateUser,
   getSuggestedUsers,
   findUserByUserName,
+  getFollowingUsers,
   toggleFollow,
 };

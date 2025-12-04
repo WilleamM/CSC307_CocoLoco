@@ -8,6 +8,7 @@ import { API_BASE_URL } from '../apiConfig.js';
 
 const FriendsPage = ({ userId }) => {
   const [posts, setPosts] = useState([]);
+  const [followingUsers, setFollowingUsers] = useState([]);
   const hasMorePostsRef = useRef(true); // tracks if there are more posts to load
   const loadingRef = useRef(false); // tracks if data is being fetched
   const placeholderImage =
@@ -53,6 +54,21 @@ const FriendsPage = ({ userId }) => {
     fetchPosts();
   }, [currentUserId, token]);
 
+  useEffect(() => {
+    if (!currentUserId || !token) return;
+    axios
+      .get(`${API_BASE_URL}/users/${currentUserId}/following`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setFollowingUsers(res.data.following || []);
+      })
+      .catch((err) => {
+        console.error('Error fetching following list', err);
+        setFollowingUsers([]);
+      });
+  }, [currentUserId, token]);
+
   const handleToggleLike = async (postId) => {
     if (!currentUserId || !token) {
       console.warn('Must be logged in to like');
@@ -84,7 +100,10 @@ const FriendsPage = ({ userId }) => {
 
   return (
     <div className="front-page">
-      {/* Middle Column: Posts from the user */}
+      {/* Left spacer (optional content) */}
+      <div className="left-column"></div>
+
+      {/* Middle Column: Posts from followed users */}
       <div className="middle-column">
         {posts.length === 0 && <div>Loading posts...</div>}
         {posts.map((post, index) => (
@@ -142,6 +161,27 @@ const FriendsPage = ({ userId }) => {
         ))}
 
         {hasMorePostsRef.current === false && <div>No more posts to load.</div>}
+      </div>
+
+      {/* Right Column: people you follow */}
+      <div className="right-column">
+        <span>Following</span>
+        {followingUsers.length === 0 && <div>No follows yet.</div>}
+        {followingUsers.map((u) => (
+          <div key={u._id} className="profile-info">
+            <div className="profile-image">
+              <img
+                src={
+                  u.avatarUrl
+                    ? `${API_BASE_URL}${u.avatarUrl}`
+                    : 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
+                }
+                alt="profile"
+              />
+            </div>
+            <div className="display-name">{u.displayName || u.userName}</div>
+          </div>
+        ))}
       </div>
     </div>
   );
