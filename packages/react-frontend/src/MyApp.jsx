@@ -14,13 +14,9 @@ import Page_Header from './Headers/Page_Header.jsx';
 import FrontPage from './Pages/Front_Page.jsx';
 import CreatePost from './Pages/Create_Post.jsx';
 import FriendsPage from './Pages/Friends_page.jsx';
-import { API_BASE_URL } from './apiConfig.js';
 import Profile_Page_Header from './Headers/Profile_Page_Header.jsx';
 import Comments_Display_Page from './Pages/Comments_Display_Page.jsx';
-
-//This is needed for the fetch to work correctly it connects to the DB
-const API_PREFIX =
-  'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net'; //'http://localhost:8000';
+import { API_BASE_URL } from './apiConfig.js';
 
 //Home page
 function Home() {
@@ -52,17 +48,18 @@ function MyApp() {
   useEffect(() => {
     const savedToken = localStorage.getItem('authToken');
     const savedUserId = localStorage.getItem('userId');
+    const savedUserName = localStorage.getItem('userName');
 
     if (savedToken) {
       setToken(savedToken);
     }
     if (savedUserId) {
-      setUser({ id: savedUserId });
+      setUser({ id: savedUserId, userName: savedUserName });
     }
   }, []);
 
   function loginUser(creds) {
-    const promise = fetch(`${API_PREFIX}/login`, {
+    const promise = fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -76,6 +73,7 @@ function MyApp() {
             setUser({ id: payload.userId, userName: payload.userName });
             localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
             localStorage.setItem('userId', payload.userId);
+            localStorage.setItem('userName', payload.userName);
             setMessage(`Login successful; auth token saved`);
             return payload;
           });
@@ -99,7 +97,7 @@ function MyApp() {
   //}
 
   function signupUser(creds) {
-    const promise = fetch(`${API_PREFIX}/signup`, {
+    const promise = fetch(`${API_BASE_URL}/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -113,6 +111,7 @@ function MyApp() {
             setUser({ id: payload.userId, userName: payload.userName });
             localStorage.setItem('authToken', payload.token); //Used to store the authentication token in local storage
             localStorage.setItem('userId', payload.userId);
+            localStorage.setItem('userName', payload.userName);
             setMessage(
               `Signup successful for user: ${creds.username}; auth token saved`
             );
@@ -142,7 +141,7 @@ function MyApp() {
     }
 
     function fetchUsers() {
-      const promise = fetch(`${API_PREFIX}/users`, {
+      const promise = fetch(`${API_BASE_URL}/users`, {
         headers: addAuthHeader(),
       });
 
@@ -163,9 +162,17 @@ function MyApp() {
       });
   }, [token]);
 
+  function logoutUser() {
+    setToken(INVALID_TOKEN);
+    setUser(null);
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+  }
+
   return (
     <Router>
-      <Page_Header />
+      <Page_Header user={user} onLogout={logoutUser} />
       <Routes>
         <Route
           path="/"

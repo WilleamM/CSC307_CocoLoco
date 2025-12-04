@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './CreatePost.css';
 import { API_BASE_URL } from '../apiConfig.js';
@@ -16,6 +16,12 @@ function CreatePost() {
     image: null,
   });
 
+  useEffect(() => {
+    const savedUserId = localStorage.getItem('userId') || '';
+    const savedUserName = localStorage.getItem('userName') || '';
+    setForm((prev) => ({ ...prev, authorId: savedUserId, author: savedUserName }));
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -29,10 +35,16 @@ function CreatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
-    if (!form.authorId || !form.author || !form.body) {
-      setMessage('authorId, author, and body are required.');
+    if (!form.body) {
+      setMessage('Body is required.');
       return;
     }
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      setMessage('You must be logged in to create a post.');
+      return;
+    }
+
     const data = new FormData();
     data.append('authorId', form.authorId);
     data.append('author', form.author);
@@ -46,12 +58,15 @@ function CreatePost() {
     try {
       setSubmitting(true);
       await axios.post(`${API_BASE_URL}/posts`, data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
       });
       setMessage('Post created successfully.');
       setForm({
-        authorId: '',
-        author: '',
+        authorId: form.authorId,
+        author: form.author,
         title: '',
         body: '',
         visibility: 'friends',

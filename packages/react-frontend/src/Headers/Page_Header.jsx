@@ -10,8 +10,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { API_BASE_URL } from '../apiConfig.js';
 
-function Page_Header() {
+function Page_Header({ user, onLogout }) {
   const location = useLocation(); //gets the current path
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false); //will be for the control of dropdown visibility
@@ -28,16 +29,21 @@ function Page_Header() {
     navigate('/'); //this will take the user home once clicked
   };
   const goToFriendsOnly = () => {
-    navigate('/friends-only'); // this will take the user to the friends only page
+    navigate('/friends'); // this will take the user to the friends only page
   };
   const goToMakePost = () => {
     navigate('/create-post');
   };
   const goToProfilePage = () => {
-    navigate('/profile/:userId'); //this will take the user to their profile page
+    if (user?.id) {
+      navigate(`/profile/${user.id}`); // take the logged-in user to their profile page
+    } else {
+      navigate('/login');
+    }
   };
   const goToSignInPage = () => {
-    navigate('/login'); //this will take the user to login page once they click to sign out
+    onLogout?.();
+    navigate('/login'); // take the user to login page once they click to sign out
   };
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen); // this will toggle the dropdown menu visibility
@@ -53,9 +59,7 @@ function Page_Header() {
     }
 
     try {
-      const res = await fetch(
-        `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/`
-      );
+      const res = await fetch(`${API_BASE_URL}/users/`);
       if (res.status !== 200) {
         setSearchResults([]);
         return;

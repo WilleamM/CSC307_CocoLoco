@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios'; //fetches data from an API
 import { faComment, faLocationArrow } from '@fortawesome/free-solid-svg-icons';
 import './Comments_Display_Page.css';
+import { API_BASE_URL } from '../apiConfig.js';
 
 const Comments_Display_Page = () => {
   const { userId, postId } = useParams();
@@ -14,6 +15,11 @@ const Comments_Display_Page = () => {
   const [userPost, setUserPost] = useState(null);
   const [userComments, setUserComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [currentUser, setCurrentUser] = useState({
+    id: localStorage.getItem('userId'),
+    userName: localStorage.getItem('userName'),
+    token: localStorage.getItem('authToken'),
+  });
   const placeholderImage =
     'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
@@ -26,14 +32,19 @@ const Comments_Display_Page = () => {
     if (!userData || !postId) {
       return;
     }
+    if (!currentUser.token || !currentUser.id || !currentUser.userName) {
+      console.error('User must be logged in to comment');
+      return;
+    }
     try {
       const response = await axios.post(
-        `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${postId}/comments`,
+        `${API_BASE_URL}/posts/${postId}/comments`,
         {
-          authorId: userData._id,
-          authorHandle: userData.userName,
+          authorId: currentUser.id,
+          authorHandle: currentUser.userName,
           content: newComment.trim(),
-        }
+        },
+        { headers: { Authorization: `Bearer ${currentUser.token}` } }
       );
       const created = response.data;
 
@@ -48,9 +59,7 @@ const Comments_Display_Page = () => {
     //this will get the users data
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(
-          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
-        );
+        const response = await axios.get(`${API_BASE_URL}/users/${userId}`);
         setUserData(response.data);
       } catch (error) {
         console.error('error fetching user data', error);
@@ -65,9 +74,7 @@ const Comments_Display_Page = () => {
     }
     const fetchPost = async () => {
       try {
-        const response = await axios.get(
-          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${postId}`
-        );
+        const response = await axios.get(`${API_BASE_URL}/posts/${postId}`);
         setUserPost(response.data);
       } catch (error) {
         console.error('Error fetching post', error);
@@ -84,7 +91,7 @@ const Comments_Display_Page = () => {
     const fetchUserComments = async () => {
       try {
         const response = await axios.get(
-          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${postId}/comments`
+          `${API_BASE_URL}/posts/${postId}/comments`
         );
         setUserComments(response.data.comments_list);
       } catch (error) {
@@ -104,7 +111,7 @@ const Comments_Display_Page = () => {
         {/* this will have the image from the post that was clicked on*/}
         <div className="image-box">
           <img
-            src={`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${postId}/image`}
+            src={`${API_BASE_URL}/posts/${postId}/image`}
             alt="post image"
             onError={(e) => {
               e.target.onerror = null;
@@ -124,7 +131,7 @@ const Comments_Display_Page = () => {
             className="profile-image"
             src={
               userData.avatarUrl
-                ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${userData.avatarUrl}`
+                ? `${API_BASE_URL}${userData.avatarUrl}`
                 : placeholderImage
             }
           />

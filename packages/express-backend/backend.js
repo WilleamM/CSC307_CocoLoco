@@ -47,33 +47,38 @@ app.get('/posts', (req, res) => {
 
 // POST /posts
 // Creates a new post with optional image
-app.post('/posts', upload.single('image'), (req, res) => {
-  const { authorId, author, title, body, visibility } = req.body;
+app.post('/posts', authenticateUser, upload.single('image'), async (req, res) => {
+  const { title, body, visibility } = req.body;
 
-  if (!authorId || !author || !body) {
+  if (!body) {
     return res.status(400).send('Missing required fields');
   }
 
-  const newPost = {
-    authorId,
-    author,
-    title,
-    body,
-    visibility: visibility || 'friends',
-  };
+  try {
+    const currentUser = await userServices.findUserByUserName(req.user.userName);
+    if (!currentUser) {
+      return res.status(401).send('Unauthorized');
+    }
 
-  if (req.file) {
-    newPost.image = req.file.buffer;
-    newPost.imageContentType = req.file.mimetype;
+    const newPost = {
+      authorId: currentUser._id,
+      author: currentUser.userName,
+      title,
+      body,
+      visibility: visibility || 'friends',
+    };
+
+    if (req.file) {
+      newPost.image = req.file.buffer;
+      newPost.imageContentType = req.file.mimetype;
+    }
+
+    const savedPost = await postServices.addPost(newPost);
+    return res.status(201).send(savedPost);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('Failed to create post');
   }
-
-  postServices
-    .addPost(newPost)
-    .then((savedPost) => res.status(201).send(savedPost))
-    .catch((error) => {
-      console.error(error);
-      res.status(500).send('Failed to create post');
-    });
 });
 
 // GET /posts/:id
@@ -419,31 +424,33 @@ body: {
 }
 Returns the created comment
 */
-app.post('/posts/:postId/comments', (req, res) => {
+app.post('/posts/:postId/comments', authenticateUser, async (req, res) => {
   const postId = req.params.postId;
-  const { authorId, authorHandle, content } = req.body;
+  const { content } = req.body;
 
-  if (!authorId || !authorHandle || !content) {
-    return res
-      .status(400)
-      .send('authorId, authorHandle, and content are required');
+  if (!content) {
+    return res.status(400).send('content is required');
   }
 
-  let createdComment;
+  try {
+    const currentUser = await userServices.findUserByUserName(req.user.userName);
+    if (!currentUser) {
+      return res.status(401).send('Unauthorized');
+    }
 
-  commentServices
-    .createComment({ postId, authorId, authorHandle, content })
-    .then((comment) => {
-      createdComment = comment;
-      return commentServices.addCommentToPost(postId, comment._id);
-    })
-    .then(() => {
-      res.status(201).send(createdComment);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Failed to create comment');
+    const createdComment = await commentServices.createComment({
+      postId,
+      authorId: currentUser._id,
+      authorHandle: currentUser.userName,
+      content,
     });
+
+    await commentServices.addCommentToPost(postId, createdComment._id);
+    return res.status(201).send(createdComment);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('Failed to create comment');
+  }
 });
 
 // DELETE /users/:id
