@@ -128,7 +128,13 @@ const ProfilePage = () => {
           {(() => {
             if (userPost && userPost.length > 0) {
               return userPost.map((post) => (
-                <div key={post._id} onClick={() => navigate(`/users/${userId}/posts/${post._id}/comments`)} className="post-item">
+                <div
+                  key={post._id}
+                  onClick={() =>
+                    navigate(`/users/${userId}/posts/${post._id}/comments`)
+                  }
+                  className="post-item"
+                >
                   <img
                     src={
                       post.image

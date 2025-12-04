@@ -200,7 +200,10 @@ function MyApp() {
         />
         <Route path="/create-post" element={<CreatePost />} />
         <Route path="*" element={<div>Not found</div>} />
-        <Route path="/users/:userId/posts/:postId/comments" element={<Comments_Display_Page />}/>
+        <Route
+          path="/users/:userId/posts/:postId/comments"
+          element={<Comments_Display_Page />}
+        />
       </Routes>
     </Router>
   );

@@ -7,7 +7,7 @@ import { API_BASE_URL } from '../apiConfig.js';
 const UserPage = () => {
   const { userId } = useParams();
   const [userData, setUserData] = useState(null);
-  const [userPosts, setUserPost] = useState(null);
+  const [, setUserPost] = useState(null);
   const [editingBio, setEditingBio] = useState(false);
   const [bioDraft, setBioDraft] = useState('');
 

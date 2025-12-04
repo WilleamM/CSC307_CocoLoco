@@ -1,11 +1,10 @@
-import  { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { API_BASE_URL } from '../apiConfig.js';
 import { useNavigate } from 'react-router-dom';
-import { faComment, faThumbsUp,} from '@fortawesome/free-solid-svg-icons';
-import './Front_page.css';
+import './Front_Page.css';
 
 const FrontPage = () => {
   const [posts, setPosts] = useState([]);
@@ -47,9 +46,7 @@ const FrontPage = () => {
   useEffect(() => {
     const fetchSuggestedUsers = async () => {
       try {
-        const response = await axios.get(
-          'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/suggested-users'
-        );
+        const response = await axios.get(`${API_BASE_URL}/suggested-users`);
         setSuggestedUsers(response.data.suggestedUsers || []);
       } catch (error) {
         console.error('Error fetching suggested users:', error);
@@ -129,7 +126,13 @@ const FrontPage = () => {
                   </button>
                 </div>
                 <div className="comment">
-                  <button onClick={() => navigate(`/users/${post.authorId}/posts/${post._id}/comments`)}>
+                  <button
+                    onClick={() =>
+                      navigate(
+                        `/users/${post.authorId}/posts/${post._id}/comments`
+                      )
+                    }
+                  >
                     <FontAwesomeIcon icon={faComment} />
                     <span>{post.comments.length} Comments</span>
                   </button>

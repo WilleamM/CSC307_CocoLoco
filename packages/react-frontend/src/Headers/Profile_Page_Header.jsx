@@ -1,6 +1,5 @@
 // this will be the header for the profile page
 
-
 import './Profile_Page_Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -76,8 +75,8 @@ function Profile_Page_Header() {
               </ul>
             </div>
           )}
+        </div>
       </div>
-    </div>
     </header>
   );
 }
