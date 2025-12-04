@@ -35,11 +35,11 @@
   border: 1px solid rgba(255, 255, 255, 0.4);
   width: 200px;
   background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  color: #356fac;
 }
 
 .search-bar input::placeholder {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(53, 111, 172, 0.85);
 }
 
 /* Middle Section: Icons */
@@ -83,9 +83,9 @@
 .upload button {
   display: flex;
   align-items: center;
-  background-color: #264f7a;
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background-color: #ffffff;
+  color: #356fac;
+  border: 1px solid #356fac;
   border-radius: 20px;
   padding: 8px 16px;
   cursor: pointer;
