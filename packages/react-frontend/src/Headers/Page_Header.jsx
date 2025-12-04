@@ -7,8 +7,6 @@ import {
   faUserGroup,
   faArrowUp,
   faMagnifyingGlass,
-  faMoon,
-  faSun,
 } from '@fortawesome/free-solid-svg-icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -29,7 +27,6 @@ function Page_Header({ user, onLogout, onProfileUpdated, refreshTrigger }) {
   const [editAvatar, setEditAvatar] = useState(null);
   const [statusMsg, setStatusMsg] = useState('');
   const [avatarSrc, setAvatarSrc] = useState('/profile.png');
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
   const hideHeader =
     location.pathname === '/login' || location.pathname === '/signup';
@@ -112,20 +109,6 @@ function Page_Header({ user, onLogout, onProfileUpdated, refreshTrigger }) {
       });
   }, [user?.id, refreshTrigger]);
 
-  useEffect(() => {
-    const root = document.body;
-    if (theme === 'dark') {
-      root.classList.add('dark-mode');
-    } else {
-      root.classList.remove('dark-mode');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
-
   const handleSaveProfile = async () => {
     if (!user?.id) {
       navigate('/login');
@@ -204,13 +187,6 @@ function Page_Header({ user, onLogout, onProfileUpdated, refreshTrigger }) {
         </button>
         <button className="friends-only-icon" onClick={goToFriendsOnly}>
           <FontAwesomeIcon icon={faUserGroup} />
-        </button>
-        <button
-          className="theme-toggle"
-          onClick={toggleTheme}
-          title="Toggle theme"
-        >
-          <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} />
         </button>
       </div>
 
