@@ -44,6 +44,7 @@ function MyApp() {
   const [token, setToken] = useState(INVALID_TOKEN);
   const [message, setMessage] = useState('');
   const [user, setUser] = useState(null);
+  const [profileRefresh, setProfileRefresh] = useState(0);
 
   useEffect(() => {
     const savedToken = localStorage.getItem('authToken');
@@ -170,9 +171,18 @@ function MyApp() {
     localStorage.removeItem('userName');
   }
 
+  function handleProfileUpdated() {
+    setProfileRefresh((prev) => prev + 1);
+  }
+
   return (
     <Router>
-      <Page_Header user={user} onLogout={logoutUser} />
+      <Page_Header
+        user={user}
+        onLogout={logoutUser}
+        onProfileUpdated={handleProfileUpdated}
+        refreshTrigger={profileRefresh}
+      />
       <Routes>
         <Route
           path="/"
@@ -191,7 +201,7 @@ function MyApp() {
           path="/profile/:userId"
           element={
             <ProtectedRoute token={token}>
-              <ProfilePage />
+              <ProfilePage refreshTrigger={profileRefresh} />
             </ProtectedRoute>
           }
         />

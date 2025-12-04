@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { API_BASE_URL } from '../apiConfig.js';
 import axios from 'axios';
 
-function Page_Header({ user, onLogout }) {
+function Page_Header({ user, onLogout, onProfileUpdated, refreshTrigger }) {
   const location = useLocation(); //gets the current path
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false); //will be for the control of dropdown visibility
@@ -26,6 +26,7 @@ function Page_Header({ user, onLogout }) {
   const [editBio, setEditBio] = useState('');
   const [editAvatar, setEditAvatar] = useState(null);
   const [statusMsg, setStatusMsg] = useState('');
+  const [avatarSrc, setAvatarSrc] = useState('/profile.png');
 
   if (location.pathname === '/login') {
     return null; // will return null once it goes to login page so the header won't render
@@ -87,6 +88,31 @@ function Page_Header({ user, onLogout }) {
     }
   };
 
+  useEffect(() => {
+    if (!user?.id) {
+      setAvatarSrc('/profile.png');
+      return;
+    }
+    axios
+      .get(`${API_BASE_URL}/users/${user.id}`)
+      .then((response) => {
+        const data = response.data || {};
+        if (data.avatarUrl) {
+          setAvatarSrc(`${API_BASE_URL}${data.avatarUrl}?t=${Date.now()}`);
+        } else {
+          setAvatarSrc('/profile.png');
+        }
+        if (data.displayName) {
+          setEditDisplayName(data.displayName);
+        }
+        setEditBio(data.bio || '');
+      })
+      .catch((err) => {
+        console.error('Error loading avatar', err);
+        setAvatarSrc('/profile.png');
+      });
+  }, [user?.id, refreshTrigger]);
+
   const handleSaveProfile = async () => {
     if (!user?.id) {
       navigate('/login');
@@ -117,6 +143,7 @@ function Page_Header({ user, onLogout }) {
       .then((response) => {
         setStatusMsg('Profile updated');
         setShowEditModal(false);
+        onProfileUpdated?.();
       })
       .catch((error) => {
         console.error('Error updating profile', error);
@@ -175,7 +202,7 @@ function Page_Header({ user, onLogout }) {
         <div className="profile-icon" onClick={toggleDropdown}>
           {/* will toggle the dropdown menu to true once clicked */}
           {/* will add a click on button so that it can go to the profile page */}
-          <img src="/profile.png" alt="profile" className="profile-picture" />
+          <img src={avatarSrc} alt="profile" className="profile-picture" />
           {dropdownOpen && (
             <div className="dropdown-menu">
               <ul>
@@ -205,10 +232,7 @@ function Page_Header({ user, onLogout }) {
         </div>
       </div>
       {showEditModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => setShowEditModal(false)}
-        >
+        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
           <div
             className="modal"
             onClick={(e) => {

@@ -19,7 +19,11 @@ function CreatePost() {
   useEffect(() => {
     const savedUserId = localStorage.getItem('userId') || '';
     const savedUserName = localStorage.getItem('userName') || '';
-    setForm((prev) => ({ ...prev, authorId: savedUserId, author: savedUserName }));
+    setForm((prev) => ({
+      ...prev,
+      authorId: savedUserId,
+      author: savedUserName,
+    }));
   }, []);
 
   const handleChange = (e) => {

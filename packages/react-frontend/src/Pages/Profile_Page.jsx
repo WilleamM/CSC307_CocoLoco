@@ -4,13 +4,11 @@ import axios from 'axios'; // fetches data from an API
 import './ProfilePage.css';
 import { API_BASE_URL } from '../apiConfig.js';
 
-const ProfilePage = () => {
+const ProfilePage = ({ refreshTrigger }) => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [userPost, setUserPost] = useState(null);
-  const [editingBio, setEditingBio] = useState(false);
-  const [bioDraft, setBioDraft] = useState('');
   const placeholderImage =
     'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
@@ -20,13 +18,12 @@ const ProfilePage = () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/users/${userId}`);
         setUserData(response.data);
-        setBioDraft(response.data.bio || '');
       } catch (error) {
         console.error('Error fetching data user', error);
       }
     };
     fetchUserData();
-  }, [userId]);
+  }, [userId, refreshTrigger]);
 
   useEffect(() => {
     //this will be for getting the posts for a specfic user based off Id,  and will add when ImageUrl implementation is done
@@ -46,30 +43,6 @@ const ProfilePage = () => {
     }; // will check if the user exists before fetching for posts
     fetchUserPost();
   }, [userId, userData]);
-
-  const handleStartEditBio = () => {
-    setBioDraft(userData?.bio || '');
-    setEditingBio(true);
-  };
-
-  const handleSaveBio = async () => {
-    try {
-      const token = localStorage.getItem('authToken');
-      const res = await axios.put(
-        `${API_BASE_URL}/users/${userId}/bio`,
-        { bio: bioDraft },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setUserData((prev) => ({ ...prev, bio: res.data.bio }));
-      setEditingBio(false);
-    } catch (error) {
-      console.error('Error updating bio', error);
-    }
-  };
 
   if (!userData) {
     //if there's no user found then it will just put a Loading on their screen
@@ -112,35 +85,7 @@ const ProfilePage = () => {
           </div>
           <div className="profile-bio">
             <p className="username">{userData.userName}</p>
-            {editingBio ? (
-              <>
-                <textarea
-                  className="bio-input"
-                  value={bioDraft}
-                  onChange={(e) => setBioDraft(e.target.value)}
-                  rows={3}
-                />
-                <div>
-                  <button className="follow-button" onClick={handleSaveBio}>
-                    Save
-                  </button>
-                  <button
-                    className="follow-button"
-                    onClick={() => setEditingBio(false)}
-                    style={{ marginLeft: '8px' }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="bio">{userData.bio || ''}</p>
-                <button className="follow-button" onClick={handleStartEditBio}>
-                  Change Bio
-                </button>
-              </>
-            )}
+            <p className="bio">{userData.bio || ''}</p>
           </div>
           <button className="follow-button">Follow</button>
         </div>
