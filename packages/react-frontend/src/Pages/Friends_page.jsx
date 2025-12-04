@@ -90,16 +90,18 @@ const FriendsPage = ({ userId }) => {
         {posts.map((post, index) => (
           <div key={index} className="post-rec">
             <div className="top-of-rec">
-              <div className="post-header">
-                <div className="profile-info">
+              <div className="post-meta">
+                <div className="meta-left">
                   <div className="display-name">{post.author}</div>
-                  <div className="post-date">
-                    {new Date(post.publishedAt).toLocaleDateString()}
-                  </div>
                   {post.title && <div className="post-title">{post.title}</div>}
-                  <div className="post-cap">{post.body}</div>
+                </div>
+                <div className="post-date">
+                  {post.publishedAt
+                    ? new Date(post.publishedAt).toLocaleDateString()
+                    : ''}
                 </div>
               </div>
+              <div className="post-cap">{post.body}</div>
             </div>
 
             {post.image && (

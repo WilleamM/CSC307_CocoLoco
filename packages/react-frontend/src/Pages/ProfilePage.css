@@ -8,6 +8,7 @@
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
     sans-serif;
+  color: #111;
 }
 
 /* Profile Header */
@@ -35,12 +36,15 @@
 /* Profile Info */
 .profile-info {
   flex: 1;
+  display: block;
+  color: #111;
 }
 
 .display-name {
   font-size: 28px;
   font-weight: 300;
   margin-bottom: 12px;
+  color: #111;
 }
 
 /* Stats */
@@ -57,11 +61,11 @@
 .stat-value {
   font-weight: 600;
   margin-right: 5px;
-  color: black;
+  color: #111;
 }
 
 .stat-label {
-  color: black;
+  color: #111;
 }
 
 /* Bio */
