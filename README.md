@@ -1,6 +1,6 @@
 # CSC307_CocoLoco
 
-**Figma Storyboard** : https://www.figma.com/design/b0CTNj903HIhA1nK6MSvO0/UI-Prototyping?node-id=98-4&t=K3ox3zkKE5XOxGVy-1
+**Figma Storyboard** : file:///Users/mrdr1pster/Downloads/UI%20Prototyping%20and%20storyboard.pdf
 
 **UML Diagram** : https://lucid.app/lucidchart/18fd1f9d-c626-4e05-8653-da345afafee1/edit?viewport_loc=-277%2C-932%2C1774%2C985%2C0_0&invitationId=inv_014d83cf-ad1c-4fa6-9995-ce03d49fe600
 
@@ -24,6 +24,8 @@ npm install axios
 
 npm install bcrypt
 npm install jsonwebtoken
+npm install multer
+npm install react-router-dom
 ```
 
 # How To Run:
