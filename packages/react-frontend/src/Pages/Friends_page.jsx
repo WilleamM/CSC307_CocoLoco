@@ -12,6 +12,8 @@ const FriendsPage = ({ userId }) => {
   const loadingRef = useRef(false); // tracks if data is being fetched
   const placeholderImage =
     'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+  const currentUserId = userId || localStorage.getItem('userId');
+  const token = localStorage.getItem('authToken');
 
   const fetchPosts = async () => {
     if (loadingRef.current || !hasMorePostsRef.current) return; // prevents if already loading or no more posts
@@ -19,17 +21,20 @@ const FriendsPage = ({ userId }) => {
     loadingRef.current = true; // mark as loading
 
     try {
-      const response = await axios.get(
-        //'http://localhost:8000/feed',
-        'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/feed',
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_BASE_URL}/feed`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      const newPosts = response.data.posts_list || [];
+      const newPosts = (response.data.posts_list || []).map((p) => ({
+        ...p,
+        likesCount: Array.isArray(p.likes) ? p.likes.length : 0,
+        liked:
+          currentUserId &&
+          Array.isArray(p.likes) &&
+          p.likes.some((id) => String(id) === String(currentUserId)),
+      }));
 
       // full list of posts from the backend
       setPosts(newPosts);
@@ -46,7 +51,36 @@ const FriendsPage = ({ userId }) => {
     setPosts([]);
     hasMorePostsRef.current = true;
     fetchPosts();
-  }, []);
+  }, [currentUserId, token]);
+
+  const handleToggleLike = async (postId) => {
+    if (!currentUserId || !token) {
+      console.warn('Must be logged in to like');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/posts/${postId}/like`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const { likes, liked } = response.data;
+      setPosts((prev) =>
+        prev.map((p) =>
+          p._id === postId
+            ? {
+                ...p,
+                likesCount: typeof likes === 'number' ? likes : p.likesCount,
+                liked,
+              }
+            : p
+        )
+      );
+    } catch (error) {
+      console.error('Error toggling like', error);
+    }
+  };
 
   return (
     <div className="front-page">
@@ -84,9 +118,14 @@ const FriendsPage = ({ userId }) => {
             <div className="bottom-of-rec">
               <div className="actions-bot-header">
                 <div className="like">
-                  <button>
+                  <button
+                    className={post.liked ? 'liked' : ''}
+                    onClick={() => handleToggleLike(post._id)}
+                  >
                     <FontAwesomeIcon icon={faThumbsUp} />
-                    <span>{post.likes.length} Likes</span>
+                    <span>
+                      {post.likesCount ?? (post.likes || []).length} Likes
+                    </span>
                   </button>
                 </div>
                 <div className="comment">
@@ -101,22 +140,6 @@ const FriendsPage = ({ userId }) => {
         ))}
 
         {hasMorePostsRef.current === false && <div>No more posts to load.</div>}
-      </div>
-
-      {/* Right Column: Other content like leaderboard */}
-      <div className="right-column">
-        <span>Most Followed People</span>
-        <div className="profile-image">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
-            alt="profile"
-          />
-        </div>
-        <div className="profile-info">
-          <div className="display-name">UserName</div>
-          <div className="followers">500</div>
-          <span>Followers</span>
-        </div>
       </div>
     </div>
   );

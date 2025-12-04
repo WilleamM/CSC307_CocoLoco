@@ -132,6 +132,40 @@ app.get('/posts/:id/image', (req, res) => {
     });
 });
 
+// POST /posts/:id/like - toggles like for current user
+app.post('/posts/:id/like', authenticateUser, (req, res) => {
+  const postId = req.params.id;
+  let currentUserId;
+
+  userServices
+    .findUserByUserName(req.user.userName)
+    .then((user) => {
+      if (!user) {
+        res.status(401).send('Unauthorized');
+        return null;
+      }
+      currentUserId = user._id;
+      return postServices.toggleLike(postId, user._id);
+    })
+    .then((updatedPost) => {
+      if (!updatedPost) {
+        return res.status(404).send('Post not found');
+      }
+      const liked = updatedPost.likes.some(
+        (id) => String(id) === String(currentUserId)
+      );
+      res.send({
+        postId: updatedPost._id,
+        likes: updatedPost.likes.length,
+        liked,
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Failed to toggle like');
+    });
+});
+
 // GET /posts/:postId/comments
 // Example: GET http://localhost:8000/posts/671eb54c8ddad1d8cf7a0012/comments
 // Returns all comments for a given post, sorted oldest → newest

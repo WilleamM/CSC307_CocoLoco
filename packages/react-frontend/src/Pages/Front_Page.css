@@ -83,6 +83,11 @@ button:hover {
   transform: translateY(-1px);
 }
 
+.liked {
+  background-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
 /* Middle Column */
 .middle-column {
   width: 50%;
@@ -102,8 +107,17 @@ button:hover {
   margin-bottom: 10px;
 }
 
-.post-header {
-  margin-bottom: 15px;
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.meta-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .display-name {
@@ -117,6 +131,8 @@ button:hover {
 
 .post-cap {
   margin-top: 5px;
+  font-size: 15px;
+  line-height: 1.4;
 }
 
 .mid-of-rec {

@@ -12,6 +12,10 @@ const FrontPage = () => {
   const hasMorePostsRef = useRef(true); // tracks if there are more posts to load
   const loadingRef = useRef(false); // tracks if data is being fetched
   const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState({
+    id: localStorage.getItem('userId') || '',
+    token: localStorage.getItem('authToken') || '',
+  });
   const placeholderImage =
     'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
@@ -23,7 +27,14 @@ const FrontPage = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/posts`);
 
-      const newPosts = response.data.posts_list || [];
+      const newPosts = (response.data.posts_list || []).map((p) => ({
+        ...p,
+        likesCount: Array.isArray(p.likes) ? p.likes.length : 0,
+        liked:
+          currentUser.id &&
+          Array.isArray(p.likes) &&
+          p.likes.some((id) => String(id) === String(currentUser.id)),
+      }));
 
       // full list of posts from the backend
       setPosts(newPosts);
@@ -40,7 +51,7 @@ const FrontPage = () => {
     setPosts([]);
     hasMorePostsRef.current = true;
     fetchPosts();
-  }, []);
+  }, [currentUser.id]);
 
   // Fetch suggested users
   useEffect(() => {
@@ -63,6 +74,35 @@ const FrontPage = () => {
 
     fetchSuggestedUsers();
   }, []); // Fetch suggested users once on mount
+
+  const handleToggleLike = async (postId) => {
+    if (!currentUser.id || !currentUser.token) {
+      console.warn('Must be logged in to like');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/posts/${postId}/like`,
+        {},
+        { headers: { Authorization: `Bearer ${currentUser.token}` } }
+      );
+      const { likes, liked } = response.data;
+      setPosts((prev) =>
+        prev.map((p) =>
+          p._id === postId
+            ? {
+                ...p,
+                likesCount: typeof likes === 'number' ? likes : p.likesCount,
+                liked,
+              }
+            : p
+        )
+      );
+    } catch (error) {
+      console.error('Error toggling like', error);
+    }
+  };
 
   return (
     <div className="front-page">
@@ -100,16 +140,18 @@ const FrontPage = () => {
         {posts.map((post, index) => (
           <div key={index} className="post-rec">
             <div className="top-of-rec">
-              <div className="post-header">
-                <div className="profile-info">
+              <div className="post-meta">
+                <div className="meta-left">
                   <div className="display-name">{post.author}</div>
-                  <div className="post-date">
-                    {new Date(post.publishedAt).toLocaleDateString()}
-                  </div>
                   {post.title && <div className="post-title">{post.title}</div>}
-                  <div className="post-cap">{post.body}</div>
+                </div>
+                <div className="post-date">
+                  {post.publishedAt
+                    ? new Date(post.publishedAt).toLocaleDateString()
+                    : ''}
                 </div>
               </div>
+              <div className="post-cap">{post.body}</div>
             </div>
 
             {post.image && (
@@ -128,9 +170,14 @@ const FrontPage = () => {
             <div className="bottom-of-rec">
               <div className="actions-bot-header">
                 <div className="like">
-                  <button>
+                  <button
+                    className={post.liked ? 'liked' : ''}
+                    onClick={() => handleToggleLike(post._id)}
+                  >
                     <FontAwesomeIcon icon={faThumbsUp} />
-                    <span>{post.likes.length} Likes</span>
+                    <span>
+                      {post.likesCount ?? (post.likes || []).length} Likes
+                    </span>
                   </button>
                 </div>
                 <div className="comment">

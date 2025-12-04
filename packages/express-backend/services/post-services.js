@@ -108,6 +108,22 @@ function findPostByIdForUpdate(id) {
   return Post.findById(id); // Returns Mongoose document (not lean) for updates
 }
 
+function toggleLike(postId, userId) {
+  return Post.findById(postId).then((post) => {
+    if (!post) {
+      return null;
+    }
+    const userIdStr = String(userId);
+    const hasLiked = post.likes.some((id) => String(id) === userIdStr);
+    if (hasLiked) {
+      post.likes = post.likes.filter((id) => String(id) !== userIdStr);
+    } else {
+      post.likes.push(userId);
+    }
+    return post.save();
+  });
+}
+
 export default {
   getPosts,
   getPostsNoSearchTerms,
@@ -118,4 +134,5 @@ export default {
   findPostByIdForUpdate,
   addPost,
   getPostByFriendIds,
+  toggleLike,
 };
