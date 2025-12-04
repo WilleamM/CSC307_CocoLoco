@@ -3,51 +3,37 @@ import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 import userServices from './user-services.js';
 
-const creds = [];
-
 // registerUser: For creating a new user
-export function registerUser(req, res) {
-  const { userName, password } = req.body; // from form
-
-  let error;
+export async function registerUser(req, res) {
+  const { userName, password, displayName } = req.body; // from form
 
   if (!userName || !password) {
-    error = new Error('Bad request: Invalid input data.');
-    error.statusCode = 400;
-    throw error;
-  } else if (creds.find((c) => c.userName === userName)) {
-    error = new Error('Username already taken.');
-    error.statusCode = 409;
-    throw error;
-  } else {
-    const promise = bcrypt
-      .genSalt(10)
-      .then((salt) => bcrypt.hash(password, salt))
-      .then((hashedPassword) => {
-        creds.push({ userName, hashedPassword });
-        return generateAccessToken(userName).then((token) => {
-          console.log('Token:', token);
-          //Used to save the user and send a response
-          return userServices
-            .addUser({
-              userName,
-              displayName: userName,
-              password: hashedPassword,
-            })
-            .then((newUser) => {
-              res.status(201).send({ token: token, userId: newUser._id });
-            });
-        });
-      });
+    return res.status(400).send('username and password are required');
+  }
 
-    promise.catch((error) => {
-      console.error('error registering user', error);
-      if (!res.headersSent) {
-        res.status(500).send('Code error');
-      }
+  try {
+    const existing = await userServices.findUserByUserName(userName);
+    if (existing) {
+      return res.status(409).send('Username already taken');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const token = await generateAccessToken(userName);
+
+    const newUser = await userServices.addUser({
+      userName,
+      displayName: displayName || userName,
+      password: hashedPassword,
     });
 
-    return promise;
+    return res
+      .status(201)
+      .send({ token, userId: newUser._id, userName: newUser.userName });
+  } catch (error) {
+    console.error('error registering user', error);
+    if (!res.headersSent) {
+      res.status(500).send('Failed to create user');
+    }
   }
 }
 
@@ -111,7 +97,11 @@ export function loginUser(req, res) {
         .then((matched) => {
           if (matched) {
             generateAccessToken(userName).then((token) => {
-              res.status(200).send({ token: token, userId: retrievedUser._id });
+              res.status(200).send({
+                token: token,
+                userId: retrievedUser._id,
+                userName: retrievedUser.userName,
+              });
             });
           } else {
             // invalid password
