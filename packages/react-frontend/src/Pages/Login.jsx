@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Link,
-  useNavigate,
-} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 
 function Login(props) {
@@ -34,7 +28,7 @@ function Login(props) {
     try {
       const payload = await props.handleSubmit(creds);
       setMsg('User successfully logged in!\n');
-      navigate(`/user/${payload.userId}`);
+      navigate(`/profile/${payload.userId}`);
     } catch (error) {
       console.error('Error logging user:', error);
       setMsg(error.response?.data || 'Error logging User');

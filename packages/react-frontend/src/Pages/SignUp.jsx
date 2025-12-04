@@ -38,8 +38,8 @@ function SignUp(props) {
     try {
       const payload = await props.handleSubmit(creds);
       setMsg('User successfully Created!');
-      // Handle successful registration (e.g., redirect, show success message)
-      navigate(`/user/${payload.userId}`);
+      // Redirect to the logged-in user's profile page
+      navigate(`/profile/${payload.userId}`);
     } catch (error) {
       console.error('Error registering user:', error);
       setMsg(error.response?.data || 'Error Creating User');

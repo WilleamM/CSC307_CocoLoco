@@ -9,7 +9,6 @@ import {
 import ProfilePage from './Pages/Profile_Page.jsx';
 import Login from './Pages/Login.jsx';
 import SignUp from './Pages/SignUp.jsx';
-import User_page from './Pages/User_page.jsx';
 const INVALID_TOKEN = 'INVALID_TOKEN';
 import Page_Header from './Headers/Page_Header.jsx';
 import FrontPage from './Pages/Front_Page.jsx';
@@ -168,7 +167,14 @@ function MyApp() {
     <Router>
       <Page_Header />
       <Routes>
-        <Route path="/" element={<FrontPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute token={token}>
+              <FrontPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/login" element={<Login handleSubmit={loginUser} />} />
         <Route
           path="/signup"
@@ -179,14 +185,6 @@ function MyApp() {
           element={
             <ProtectedRoute token={token}>
               <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/:userId"
-          element={
-            <ProtectedRoute token={token}>
-              <User_page />
             </ProtectedRoute>
           }
         />
