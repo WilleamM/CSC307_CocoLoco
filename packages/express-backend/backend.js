@@ -4,6 +4,7 @@ import userServices from './services/user-services.js';
 import postServices from './services/post-services.js';
 import { registerUser, loginUser, authenticateUser } from './services/auth.js';
 import multer from 'multer';
+import commentServices from './services/comment-services.js';
 
 // Configure Multer to store files in memory
 const storage = multer.memoryStorage();
@@ -75,6 +76,25 @@ app.post('/posts', upload.single('image'), (req, res) => {
     });
 });
 
+// GET /posts/:id
+// Example: GET http://localhost:8000/posts/671eb54c8ddad1d8cf7a0012
+// Returns a single post by id
+app.get('/posts/:id', (req, res) => {
+  const id = req.params.id;
+  postServices
+    .findPostById(id)
+    .then((post) => {
+      if (!post) {
+        return res.status(404).send('Post not found');
+      }
+      return res.send(post);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(400).send('Invalid post id');
+    });
+});
+
 // GET /posts/:id/image
 // Retrieves a post's image
 app.get('/posts/:id/image', (req, res) => {
@@ -98,6 +118,23 @@ app.get('/posts/:id/image', (req, res) => {
     .catch((error) => {
       console.error(error);
       res.status(500).send('Failed to fetch image');
+    });
+});
+
+// GET /posts/:postId/comments
+// Example: GET http://localhost:8000/posts/671eb54c8ddad1d8cf7a0012/comments
+// Returns all comments for a given post, sorted oldest → newest
+app.get('/posts/:postId/comments', (req, res) => {
+  const postId = req.params.postId;
+
+  commentServices
+    .getCommentsByPostId(postId)
+    .then((comments) => {
+      res.send({ comments_list: comments });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Failed to fetch comments');
     });
 });
 
@@ -368,6 +405,44 @@ app.post('/users', (req, res) => {
     .catch((err) => {
       console.error(err);
       res.status(err.statusCode).send(err.message ?? 'Failed to create user');
+    });
+});
+
+// POST /posts/:postId/comments
+/*
+Example:
+POST http://localhost:8000/posts/671eb54c8ddad1d8cf7a0012/comments
+body: {
+  "authorId": "671eb54c8ddad1d8cf7a0001",
+  "authorHandle": "willeam",
+  "content": "Nice post!"
+}
+Returns the created comment
+*/
+app.post('/posts/:postId/comments', (req, res) => {
+  const postId = req.params.postId;
+  const { authorId, authorHandle, content } = req.body;
+
+  if (!authorId || !authorHandle || !content) {
+    return res
+      .status(400)
+      .send('authorId, authorHandle, and content are required');
+  }
+
+  let createdComment;
+
+  commentServices
+    .createComment({ postId, authorId, authorHandle, content })
+    .then((comment) => {
+      createdComment = comment;
+      return commentServices.addCommentToPost(postId, comment._id);
+    })
+    .then(() => {
+      res.status(201).send(createdComment);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Failed to create comment');
     });
 });
 

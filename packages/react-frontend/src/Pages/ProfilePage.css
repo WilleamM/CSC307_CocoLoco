@@ -57,6 +57,11 @@
 .stat-value {
   font-weight: 600;
   margin-right: 5px;
+  color: black;
+}
+
+.stat-label{
+  color: black;
 }
 
 /* Bio */
@@ -67,6 +72,7 @@
 .username {
   font-weight: 600;
   margin-bottom: 5px;
+  color: black;
 }
 
 .bio {

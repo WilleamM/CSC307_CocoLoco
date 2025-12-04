@@ -15,9 +15,14 @@ function Page_Header() {
   const location = useLocation(); //gets the current path
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false); //will be for the control of dropdown visibility
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   if (location.pathname === '/login') {
     return null; // will return null once it goes to login page so the header won't render
+  }
+  if (location.pathname === '/signup'){
+    return null;
   }
   const goToHome = () => {
     navigate('/'); //this will take the user home once clicked
@@ -38,7 +43,35 @@ function Page_Header() {
     setDropdownOpen(!dropdownOpen); // this will toggle the dropdown menu visibility
   };
 
-  return (
+  const handleSearchChange = async (e) => {
+  const value = e.target.value;
+  setSearchTerm(value);
+
+  if (!value.trim()) {
+    setSearchResults([]);
+    return;
+  }
+
+  try {
+    const res = await fetch(`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/`);
+    if (res.status !== 200) {
+      setSearchResults([]);
+      return;
+    }
+
+    const json = await res.json();
+    const allUsers = json.users_list || [];
+
+    const filtered = allUsers.filter((user) => user.userName.toLowerCase().includes(value.toLowerCase()));
+
+    setSearchResults(filtered);
+  } catch (err) {
+    console.error('Error fetching users for search:', err);
+    setSearchResults([]);
+  }
+};
+
+    return (
     <header className="front-page-header">
       <div className="left-section">
         <div className="main-logo">
@@ -48,8 +81,15 @@ function Page_Header() {
           <FontAwesomeIcon icon={faMagnifyingGlass} />
         </div>
         <div className="search-bar">
-          <input type="text" placeholder="Search Locobook" />
+          <input type="text" placeholder="Search Locobook" value={searchTerm} onChange={handleSearchChange}/>
+          <div className="search-results">
+            {searchResults.map((user) => (
+            <div key={user._id} className="search-result-item" onClick={() => navigate(`/profile/${user._id}`)}>
+              {user.userName}
+            </div>
+          ))}
         </div>
+      </div>
       </div>
 
       <div className="middle-section">

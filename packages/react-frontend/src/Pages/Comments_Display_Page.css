@@ -1,0 +1,139 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main Container for Comments Page */
+.comments-page {
+  display: flex;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+  padding: 20px;
+}
+
+/* Left Column (Image Section) */
+.left-side {
+  width: 50%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-box img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Right Column (Post, Comments, and Input) */
+.right-side {
+  width: 50%;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+/* Post Information (Username, Date, Caption) */
+.row-1 {
+  margin-bottom: 20px;
+}
+
+.profile-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+  display: inline-block;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.date {
+  color: #777;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.caption {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Comments Section */
+.row-2 {
+  margin-top: 20px;
+}
+
+.comment-text {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.comments {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.comment-user {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.comment-body {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* Comment Input Section */
+.row-3 {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.comment-icon {
+  font-size: 18px;
+  color: #333;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 25px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  outline: none;
+  margin-right: 10px;
+  background-color: #f1f1f1;
+}
+
+.search-bar input:focus {
+  border-color: #007bff;
+}
+
+.post-comment {
+  cursor: pointer;
+  font-size: 18px;
+  color: #007bff;
+  transition: color 0.3s ease;
+}
+
+.post-comment:hover {
+  color: #0056b3;
+}

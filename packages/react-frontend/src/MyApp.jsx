@@ -16,6 +16,8 @@ import FrontPage from './Pages/Front_Page.jsx';
 import CreatePost from './Pages/Create_Post.jsx';
 import FriendsPage from './Pages/Friends_page.jsx';
 import { API_BASE_URL } from './apiConfig.js';
+import Profile_Page_Header from './Headers/Profile_Page_Header.jsx';
+import Comments_Display_Page from './Pages/Comments_Display_Page.jsx';
 
 //This is needed for the fetch to work correctly it connects to the DB
 const API_PREFIX =
@@ -198,6 +200,7 @@ function MyApp() {
         />
         <Route path="/create-post" element={<CreatePost />} />
         <Route path="*" element={<div>Not found</div>} />
+        <Route path="/users/:userId/posts/:postId/comments" element={<Comments_Display_Page />}/>
       </Routes>
     </Router>
   );

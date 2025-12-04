@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
-import './Front_Page.css';
 import { API_BASE_URL } from '../apiConfig.js';
+import { useNavigate } from 'react-router-dom';
+import { faComment, faThumbsUp,} from '@fortawesome/free-solid-svg-icons';
+import './Front_page.css';
 
 const FrontPage = () => {
-  const { userId } = useParams();
   const [posts, setPosts] = useState([]);
   const [suggestedUsers, setSuggestedUsers] = useState([]); // store suggested users
   const hasMorePostsRef = useRef(true); // tracks if there are more posts to load
   const loadingRef = useRef(false); // tracks if data is being fetched
+  const navigate = useNavigate();
   const placeholderImage =
     'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
@@ -46,17 +47,18 @@ const FrontPage = () => {
   useEffect(() => {
     const fetchSuggestedUsers = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/suggested-users`, {
-          params: { id: userId },
-        });
-        setSuggestedUsers(response.data.suggestedUsers);
+        const response = await axios.get(
+          'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/suggested-users'
+        );
+        setSuggestedUsers(response.data.suggestedUsers || []);
       } catch (error) {
         console.error('Error fetching suggested users:', error);
+        setSuggestedUsers([]);
       }
     };
 
     fetchSuggestedUsers();
-  }, [userId]); // Fetch suggested users when `userId` changes
+  }, []); // Fetch suggested users once on mount
 
   return (
     <div className="front-page">
@@ -127,7 +129,7 @@ const FrontPage = () => {
                   </button>
                 </div>
                 <div className="comment">
-                  <button>
+                  <button onClick={() => navigate(`/users/${post.authorId}/posts/${post._id}/comments`)}>
                     <FontAwesomeIcon icon={faComment} />
                     <span>{post.comments.length} Comments</span>
                   </button>
