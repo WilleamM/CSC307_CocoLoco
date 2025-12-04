@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import './Front_Page.css';
+import { API_BASE_URL } from '../apiConfig.js';
 
 const FriendsPage = ({ userId }) => {
   const [posts, setPosts] = useState([]);
@@ -18,9 +19,7 @@ const FriendsPage = ({ userId }) => {
     loadingRef.current = true; // mark as loading
 
     try {
-      const response = await axios.get(
-        'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts'
-      );
+      const response = await axios.get(`${API_BASE_URL}/posts`);
 
       const newPosts = response.data.posts_list || [];
 
@@ -63,7 +62,7 @@ const FriendsPage = ({ userId }) => {
             {post.image && (
               <div className="mid-of-rec">
                 <img
-                  src={`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${post._id}/image`}
+                  src={`${API_BASE_URL}/posts/${post._id}/image`}
                   alt="post"
                   onError={(e) => {
                     e.target.onerror = null;

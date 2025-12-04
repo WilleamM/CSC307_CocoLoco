@@ -308,7 +308,7 @@ app.get('/suggested-users', (req, res) => {
     })
     .catch((error) => {
       console.error('Error fetching suggested users', error);
-      res.status(500);
+      res.status(500).send('Failed to fetch suggested users');
     });
 });
 

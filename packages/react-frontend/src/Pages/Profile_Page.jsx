@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'; // fetches data from an API
 import './ProfilePage.css';
+import { API_BASE_URL } from '../apiConfig.js';
 
 const ProfilePage = () => {
   const { userId } = useParams();
@@ -14,9 +15,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(
-          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
-        );
+        const response = await axios.get(`${API_BASE_URL}/users/${userId}`);
         setUserData(response.data);
       } catch (error) {
         console.error('Error fetching data user', error);
@@ -33,12 +32,9 @@ const ProfilePage = () => {
     }
     const fetchUserPost = async () => {
       try {
-        const response = await axios.get(
-          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts`,
-          {
-            params: { authorId: userId },
-          }
-        );
+        const response = await axios.get(`${API_BASE_URL}/posts`, {
+          params: { authorId: userId },
+        });
         setUserPost(response.data.posts_list);
       } catch (error) {
         console.error('Error fetching user posts', error);
@@ -60,7 +56,7 @@ const ProfilePage = () => {
           <img
             src={
               userData.avatarUrl
-                ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${userData.avatarUrl}?t=${userData.updatedAt || Date.now()}`
+                ? `${API_BASE_URL}${userData.avatarUrl}?t=${userData.updatedAt || Date.now()}`
                 : placeholderImage
             }
             alt="Profile"
@@ -82,13 +78,13 @@ const ProfilePage = () => {
 
               try {
                 await axios.post(
-                  `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}/avatar`,
+                  `${API_BASE_URL}/users/${userId}/avatar`,
                   formData,
                   { headers: { 'Content-Type': 'multipart/form-data' } }
                 );
                 // Refetch user data to get updated avatarUrl
                 const userResponse = await axios.get(
-                  `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
+                  `${API_BASE_URL}/users/${userId}`
                 );
                 setUserData(userResponse.data);
                 console.log('Avatar uploaded successfully');
@@ -135,7 +131,7 @@ const ProfilePage = () => {
                   <img
                     src={
                       post.image
-                        ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${post._id}/image`
+                        ? `${API_BASE_URL}/posts/${post._id}/image`
                         : placeholderImage
                     }
                     alt="post"

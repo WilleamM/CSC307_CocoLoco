@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './CreatePost.css';
-
-const API_BASE =
-  'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net';
+import { API_BASE_URL } from '../apiConfig.js';
 
 function CreatePost() {
   const [isOpen, setIsOpen] = useState(true);
@@ -47,7 +45,7 @@ function CreatePost() {
 
     try {
       setSubmitting(true);
-      await axios.post(`${API_BASE}/posts`, data, {
+      await axios.post(`${API_BASE_URL}/posts`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setMessage('Post created successfully.');

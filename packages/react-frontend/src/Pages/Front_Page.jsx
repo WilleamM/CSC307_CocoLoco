@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import './Front_Page.css';
+import { API_BASE_URL } from '../apiConfig.js';
 
 const FrontPage = () => {
   const { userId } = useParams();
@@ -20,9 +21,7 @@ const FrontPage = () => {
     loadingRef.current = true; // mark as loading
 
     try {
-      const response = await axios.get(
-        'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts'
-      );
+      const response = await axios.get(`${API_BASE_URL}/posts`);
 
       const newPosts = response.data.posts_list || [];
 
@@ -47,12 +46,9 @@ const FrontPage = () => {
   useEffect(() => {
     const fetchSuggestedUsers = async () => {
       try {
-        const response = await axios.get(
-          'https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/suggested-users',
-          {
-            params: { userId },
-          }
-        );
+        const response = await axios.get(`${API_BASE_URL}/suggested-users`, {
+          params: { id: userId },
+        });
         setSuggestedUsers(response.data.suggestedUsers);
       } catch (error) {
         console.error('Error fetching suggested users:', error);
@@ -75,7 +71,7 @@ const FrontPage = () => {
                 <img
                   src={
                     user.avatarUrl
-                      ? `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net${user.avatarUrl}`
+                      ? `${API_BASE_URL}${user.avatarUrl}`
                       : placeholderImage
                   }
                   alt="profile"
@@ -112,7 +108,7 @@ const FrontPage = () => {
             {post.image && (
               <div className="mid-of-rec">
                 <img
-                  src={`https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${post._id}/image`}
+                  src={`${API_BASE_URL}/posts/${post._id}/image`}
                   alt="post"
                   onError={(e) => {
                     e.target.onerror = null;

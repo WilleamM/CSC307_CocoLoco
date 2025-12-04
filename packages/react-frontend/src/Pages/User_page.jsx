@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'; // fetches data from an API
 import './ProfilePage.css';
+import { API_BASE_URL } from '../apiConfig.js';
 
 const UserPage = () => {
   const { userId } = useParams();
@@ -14,9 +15,7 @@ const UserPage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(
-          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}`
-        );
+        const response = await axios.get(`${API_BASE_URL}/users/${userId}`);
         setUserData(response.data);
       } catch (error) {
         console.error('Error fetching data user', error);
@@ -29,10 +28,9 @@ const UserPage = () => {
     //this will for the posts and will fetch from the database
     const fetchUserPost = async () => {
       try {
-        const response = await axios.get(
-          `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/posts/${userId}`,
-          { params: { author: userId } }
-        );
+        const response = await axios.get(`${API_BASE_URL}/posts/${userId}`, {
+          params: { author: userId },
+        });
         setUserPost(response.data);
       } catch (error) {
         console.error('Error fetching posts user', error);
@@ -56,7 +54,7 @@ const UserPage = () => {
       const token = localStorage.getItem('authToken');
 
       const res = await axios.put(
-        `https://cocoloco-api-gud7c3e9gzbrcpaf.westus3-01.azurewebsites.net/users/${userId}/bio`,
+        `${API_BASE_URL}/users/${userId}/bio`,
         { bio: bioDraft },
         {
           headers: {
