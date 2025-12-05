@@ -1,6 +1,6 @@
 # CSC307_CocoLoco
 
-**Figma Storyboard** : file:///Users/mrdr1pster/Downloads/UI%20Prototyping%20and%20storyboard.pdf
+**Figma Storyboard** : [file:///Users/mrdr1pster/Downloads/UI%20Prototyping%20and%20storyboard.pdf](https://acrobat.adobe.com/id/urn:aaid:sc:US:b96ca1ef-e05f-44f5-bcb4-fb9540a41aee)
 
 **UML Diagram** : https://lucid.app/lucidchart/18fd1f9d-c626-4e05-8653-da345afafee1/edit?viewport_loc=-277%2C-932%2C1774%2C985%2C0_0&invitationId=inv_014d83cf-ad1c-4fa6-9995-ce03d49fe600
 
