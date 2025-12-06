@@ -1,4 +1,7 @@
 # CSC307_CocoLoco
+**Project Description**
+For people who want to stay in contact with family and friends daily. The Locobook is a contact manager forum that allows people to share experiences and ideas with other users. Unlike Facebook, our product provides a platform for genuine, unprocessed communication and connection.
+
 
 **Figma Storyboard** : [file:///Users/mrdr1pster/Downloads/UI%20Prototyping%20and%20storyboard.pdf](https://acrobat.adobe.com/id/urn:aaid:sc:US:b96ca1ef-e05f-44f5-bcb4-fb9540a41aee)
 
